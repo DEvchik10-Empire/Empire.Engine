@@ -41,8 +41,8 @@ namespace Engine
         b8 IsAlwaysOnTop() const;
 
         b8 WasResized();
-b8 WasMoved();
-b8 HasFocus() const;
+        b8 WasMoved();
+        b8 HasFocus() const;
 
     private:
         struct Impl;
