@@ -42,10 +42,6 @@ namespace Engine
         // Void pointer для type-erased API (аллокаторы часто возвращают void*)
         using VoidPtr = void*;
 
-        // I/O
-        //using std::print;
-        //using std::println;
-
         // Characters
         using Char   = char;
         //using Char8  = char8_t;
@@ -55,6 +51,7 @@ namespace Engine
         // I/O streams
         inline std::istream& Cin  = std::cin;
         inline std::ostream& Cout = std::cout;
+        inline std::ostream& Cerr = std::cerr;
 
         // Boolean
         using b8 = bool; // просто алиас на bool, если нужен только единый стиль именования (i8/u8/f32 и т.д.)
