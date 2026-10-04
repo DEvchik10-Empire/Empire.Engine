@@ -1,42 +1,41 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
-#include "Matrix4.hpp"
+#include "../../../Kernel/Types.hpp"
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
+#include "../Empire.Engine/Engine/Math//Quaternion/Quaternion.hpp"
+#include "../Empire.Engine/Engine/Math/Matrix/Matrix4.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Transform
+    namespace Math
     {
-        Vector3 Position;
-        Quaternion Rotation;
-        Vector3 Scale;
+        using namespace Kernel;
 
-        Transform();
+        struct Transform
+        {
+            Vector3 Position;
+            Quaternion Rotation;
+            Vector3 Scale;
 
-        Transform(
-            const Vector3& Position,
-            const Quaternion& Rotation,
-            const Vector3& Scale
-        );
+            Transform();
 
-        static Transform Identity();
+            Transform(const Vector3& Position, const Quaternion& Rotation, const Vector3& Scale);
 
-        Matrix4 ToMatrix4() const;
+            static Transform Identity();
 
-        Vector3 TransformPoint(const Vector3& Point) const;
-        Vector3 TransformDirection(const Vector3& Direction) const;
+            Matrix4 ToMatrix4() const;
 
-        Transform Inversed() const;
+            Vector3 TransformPoint(const Vector3& Point) const;
+            Vector3 TransformDirection(const Vector3& Direction) const;
 
-        Transform operator*(const Transform& Other) const;
+            Transform Inversed() const;
 
-        Transform& operator*=(const Transform& Other);
+            Transform operator*(const Transform& Other) const;
 
-        b8 operator==(const Transform& Other) const;
-        b8 operator!=(const Transform& Other) const;
-    };
+            Transform& operator*=(const Transform& Other);
+
+            Types::b8 operator==(const Transform& Other) const;
+            Types::b8 operator!=(const Transform& Other) const;
+        };
+    }
 }

@@ -44,12 +44,12 @@ namespace Engine
                                 using Char16 = char16_t;
                                 using Char32 = char32_t;
 
-                                inline std::istream& Cin  = std::cin;
-                                inline std::ostream& Cout = std::cout;
-                                inline std::ostream& Cerr = std::cerr;
+                                std::istream& Cin  = std::cin;
+                                std::ostream& Cout = std::cout;
+                                std::ostream& Cerr = std::cerr;
 
                                 using b8 = bool;
                                 using i = int; // на всякий случай пусукай будет
-                 }
+                 };
        }
 }

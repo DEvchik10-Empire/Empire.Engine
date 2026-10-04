@@ -1,89 +1,59 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
+#include "../../../Kernel/Types.hpp"
+#include "../Empire.Engine/Engine/Math//Vector/Vector3.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Matrix3
+    namespace Math
     {
-        f32 M00, M01, M02;
-        f32 M10, M11, M12;
-        f32 M20, M21, M22;
+        using namespace Kernel;
 
-        Matrix3();
+        struct Matrix3
+        {
+            Types::f32 M00, M01, M02;
+            Types::f32 M10, M11, M12;
+            Types::f32 M20, M21, M22;
 
-        Matrix3(
-            f32 M00, f32 M01, f32 M02,
-            f32 M10, f32 M11, f32 M12,
-            f32 M20, f32 M21, f32 M22
-        );
+            Matrix3();
 
-        static Matrix3 Identity();
-        static Matrix3 Zero();
+            Matrix3(Types::f32 M00, Types::f32 M01, Types::f32 M02, Types::f32 M10, Types::f32 M11, Types::f32 M12, Types::f32 M20, Types::f32 M21, Types::f32 M22);
 
-        f32 Determinant() const noexcept;
+            static Matrix3 Identity();
+            static Matrix3 Zero();
 
-        Matrix3 Transposed() const noexcept;
-        Matrix3 Inversed() const noexcept;
+            Types::f32 Determinant() const noexcept;
 
-        Vector3 operator*(
-            const Vector3& Vector
-        ) const noexcept;
+            Matrix3 Transposed() const noexcept;
+            Matrix3 Inversed() const noexcept;
 
-        Matrix3 operator*(
-            const Matrix3& Other
-        ) const noexcept;
+            Vector3 operator*(const Vector3& Vector) const noexcept;
 
-        Matrix3 operator+(
-            const Matrix3& Other
-        ) const noexcept;
+            Matrix3 operator*(const Matrix3& Other) const noexcept;
 
-        Matrix3 operator-(
-            const Matrix3& Other
-        ) const noexcept;
+            Matrix3 operator+(const Matrix3& Other) const noexcept;
 
-        Matrix3 operator*(
-            f32 Scalar
-        ) const noexcept;
+            Matrix3 operator-(const Matrix3& Other) const noexcept;
 
-        Matrix3 operator/(
-            f32 Scalar
-        ) const noexcept;
+            Matrix3 operator*(Types::f32 Scalar) const noexcept;
 
-        Matrix3& operator+=(
-            const Matrix3& Other
-        ) noexcept;
+            Matrix3 operator/(Types::f32 Scalar) const noexcept;
 
-        Matrix3& operator-=(
-            const Matrix3& Other
-        ) noexcept;
+            Matrix3& operator+=(const Matrix3& Other) noexcept;
 
-        Matrix3& operator*=(
-            f32 Scalar
-        ) noexcept;
+            Matrix3& operator-=(const Matrix3& Other) noexcept;
 
-        Matrix3& operator/=(
-            f32 Scalar
-        ) noexcept;
+            Matrix3& operator*=(Types::f32 Scalar) noexcept;
 
-        Matrix3& operator*=(
-            const Matrix3& Other
-        ) noexcept;
+            Matrix3& operator/=(Types::f32 Scalar) noexcept;
 
-        b8 operator==(
-            const Matrix3& Other
-        ) const noexcept;
+            Matrix3& operator*=(const Matrix3& Other) noexcept;
 
-        b8 operator!=(
-            const Matrix3& Other
-        ) const noexcept;
-    };
+            Types::b8 operator==(const Matrix3& Other) const noexcept;
 
-    Matrix3 operator*(
-        f32 Scalar,
-        const Matrix3& Matrix
-    ) noexcept;
+            Types::b8 operator!=(const Matrix3& Other) const noexcept;
+        };
+
+        Matrix3 operator*(Types::f32 Scalar, const Matrix3& Matrix) noexcept;
+    }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.hpp"
+#include "../Empire.Engine/Kernel/Types.hpp"
 
 namespace Wayland
 {

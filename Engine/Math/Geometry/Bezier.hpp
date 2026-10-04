@@ -1,20 +1,17 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
+#include "../../../Kernel/Types.hpp"
 
-using namespace Engine;
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
 
-namespace Math
+namespace Engine
 {
-    struct Bezier
+    namespace Math
     {
-        static Vector3 Cubic(
-            const Vector3& P0,
-            const Vector3& P1,
-            const Vector3& P2,
-            const Vector3& P3,
-            f32 T
-        ) noexcept;
-    };
+        using namespace Kernel;
+        struct Bezier
+        {
+            static Vector3 Cubic(const Vector3& P0, const Vector3& P1, const Vector3& P2, const Vector3& P3, Types::f32 T) noexcept;
+        };
+    }
 }

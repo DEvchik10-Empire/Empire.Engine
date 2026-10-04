@@ -3,6 +3,7 @@
 
 namespace Platform
 {
+
     namespace Wayland
     {
         Display::Display()
@@ -42,22 +43,22 @@ namespace Platform
             return *this;
         }
 
-        b8 Display::Dispatch()
+        Types::b8 Display::Dispatch()
         {
             return wl_display_dispatch(Get()) != -1;
         }
 
-        b8 Display::DispatchPending()
+        Types::b8 Display::DispatchPending()
         {
             return wl_display_dispatch_pending(Get()) != -1;
         }
 
-        b8 Display::Roundtrip()
+        Types::b8 Display::Roundtrip()
         {
             return wl_display_roundtrip(Get()) != -1;
         }
 
-        i32 Display::GetFd() const
+        Types::i32 Display::GetFd() const
         {
             return wl_display_get_fd(Get());
         }

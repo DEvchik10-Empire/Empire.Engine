@@ -2,145 +2,106 @@
 
 #include <cmath>
 
-namespace Math
+namespace Engine
 {
-    f32 DegreesToRadians(
-        f32 Degrees
-    ) noexcept
+    namespace Math
     {
-        return Degrees * (Pi / 180.0f);
-    }
+        using namespace Kernel;
+        Types::f32 DegreesToRadians(Types::f32 Degrees) noexcept
+        {
+            return Degrees * (Pi / 180.0f);
+        }
 
-    f32 RadiansToDegrees(
-        f32 Radians
-    ) noexcept
-    {
-        return Radians * (180.0f / Pi);
-    }
+        Types::f32 RadiansToDegrees(Types::f32 Radians) noexcept
+        {
+            return Radians * (180.0f / Pi);
+        }
 
-    f32 Sin(
-        f32 Value
-    ) noexcept
-    {
-        return std::sin(Value);
-    }
+        Types::f32 Sin(Types::f32 Value) noexcept
+        {
+            return std::sin(Value);
+        }
 
-    f32 Cos(
-        f32 Value
-    ) noexcept
-    {
-        return std::cos(Value);
-    }
+        Types::f32 Cos(Types::f32 Value) noexcept
+        {
+            return std::cos(Value);
+        }
 
-    f32 Tan(
-        f32 Value
-    ) noexcept
-    {
-        return std::tan(Value);
-    }
+        Types::f32 Tan(Types::f32 Value) noexcept
+        {
+            return std::tan(Value);
+        }
 
-    f32 Asin(
-        f32 Value
-    ) noexcept
-    {
-        return std::asin(Value);
-    }
+        Types::f32 Asin(Types::f32 Value) noexcept
+        {
+            return std::asin(Value);
+        }
 
-    f32 Acos(
-        f32 Value
-    ) noexcept
-    {
-        return std::acos(Value);
-    }
+        Types::f32 Acos(Types::f32 Value) noexcept
+        {
+            return std::acos(Value);
+        }
 
-    f32 Atan2(
-        f32 Y,
-        f32 X
-    ) noexcept
-    {
-        return std::atan2(Y, X);
-    }
+        Types::f32 Atan2(Types::f32 Y, Types::f32 X) noexcept
+        {
+            return std::atan2(Y, X);
+        }
 
-    f32 Sqrt(
-        f32 Value
-    ) noexcept
-    {
-        return std::sqrt(Value);
-    }
+        Types::f32 Sqrt(Types::f32 Value) noexcept
+        {
+            return std::sqrt(Value);
+        }
 
-    f32 Abs(
-        f32 Value
-    ) noexcept
-    {
-        return std::abs(Value);
-    }
+        Types::f32 Abs(Types::f32 Value) noexcept
+        {
+            return std::abs(Value);
+        }
 
-    f32 Min(
-        f32 A,
-        f32 B
-    ) noexcept
-    {
-        return A < B ? A : B;
-    }
+        Types::f32 Min(Types::f32 A, Types::f32 B) noexcept
+        {
+            return A < B ? A : B;
+        }
 
-    f32 Max(
-        f32 A,
-        f32 B
-    ) noexcept
-    {
-        return A > B ? A : B;
-    }
+        Types::f32 Max(Types::f32 A, Types::f32 B) noexcept
+        {
+            return A > B ? A : B;
+        }
 
-    f32 Clamp(
-        f32 Value,
-        f32 Minimum,
-        f32 Maximum
-    ) noexcept
-    {
-        if (Value < Minimum)
-            return Minimum;
+        Types::f32 Clamp(Types::f32 Value, Types::f32 Minimum, Types::f32 Maximum) noexcept
+        {
+            if (Value < Minimum)
+                return Minimum;
 
-        if (Value > Maximum)
-            return Maximum;
+            if (Value > Maximum)
+                return Maximum;
 
-        return Value;
-    }
+            return Value;
+        }
 
-    f32 Lerp(
-        f32 A,
-        f32 B,
-        f32 Alpha
-    ) noexcept
-    {
-        return A + (B - A) * Alpha;
-    }
+        Types::f32 Lerp(Types::f32 A, Types::f32 B, Types::f32 Alpha) noexcept
+        {
+            return A + (B - A) * Alpha;
+        }
 
-    f32 Sign(
-        f32 Value
-    ) noexcept
-    {
-        if (Value > 0.0f)
-            return 1.0f;
+        Types::f32 Sign(Types::f32 Value) noexcept
+        {
+            if (Value > 0.0f)
+                return 1.0f;
 
-        if (Value < 0.0f)
-            return -1.0f;
+            if (Value < 0.0f)
+                return -1.0f;
 
-        return 0.0f;
-    }
+            return 0.0f;
+        }
 
-    b8 IsZero(
-        f32 Value
-    ) noexcept
-    {
-        return Abs(Value) <= Epsilon;
-    }
+        Types::b8 IsZero(Types::f32 Value) noexcept
+        {
+            return Abs(Value) <= Epsilon;
+        }
 
-    b8 NearlyEqual(
-        f32 A,
-        f32 B,
-        f32 Tolerance
-    ) noexcept
-    {
-        return Abs(A - B) <= Tolerance;
+        Types::b8 NearlyEqual(Types::f32 A, Types::f32 B, Types::f32 Tolerance) noexcept
+        {
+            return Abs(A - B) <= Tolerance;
+        }
     }
 }

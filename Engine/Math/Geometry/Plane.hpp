@@ -1,28 +1,27 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
+#include "../../../Kernel/Types.hpp"
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Plane
+    namespace Math
     {
-        Vector3 Normal;
-        f32 Distance;
+        using namespace Kernel;
+        struct Plane
+        {
+            Vector3 Normal;
+            Types::f32 Distance;
 
-        Plane() noexcept;
-        Plane(const Vector3& Normal, f32 Distance) noexcept;
+            Plane() noexcept;
+            Plane(const Vector3& Normal, Types::f32 Distance) noexcept;
 
-        static Plane FromPointNormal(
-            const Vector3& Point,
-            const Vector3& Normal
-        ) noexcept;
+            static Plane FromPointNormal(const Vector3& Point, const Vector3& Normal) noexcept;
 
-        f32 DistanceToPoint(const Vector3& Point) const noexcept;
+            Types::f32 DistanceToPoint(const Vector3& Point) const noexcept;
 
-        b8 operator==(const Plane& Other) const noexcept;
-        b8 operator!=(const Plane& Other) const noexcept;
-    };
+            Types::b8 operator==(const Plane& Other) const noexcept;
+            Types::b8 operator!=(const Plane& Other) const noexcept;
+        };
+    }
 }

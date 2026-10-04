@@ -1,24 +1,26 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
+#include "../../../Kernel/Types.hpp"
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Sphere
+    namespace Math
     {
-        Vector3 Center;
-        f32 Radius;
+        using namespace Kernel;
+        struct Sphere
+        {
+            Vector3 Center;
+            Types::f32 Radius;
 
-        Sphere() noexcept;
-        Sphere(const Vector3& Center, f32 Radius) noexcept;
+            Sphere() noexcept;
+            Sphere(const Vector3& Center, Types::f32 Radius) noexcept;
 
-        b8 Contains(const Vector3& Point) const noexcept;
-        b8 Intersects(const Sphere& Other) const noexcept;
+            Types::b8 Contains(const Vector3& Point) const noexcept;
+            Types::b8 Intersects(const Sphere& Other) const noexcept;
 
-        b8 operator==(const Sphere& Other) const noexcept;
-        b8 operator!=(const Sphere& Other) const noexcept;
-    };
+            Types::b8 operator==(const Sphere& Other) const noexcept;
+            Types::b8 operator!=(const Sphere& Other) const noexcept;
+        };
+    }
 }

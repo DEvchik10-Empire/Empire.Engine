@@ -1,25 +1,27 @@
 #pragma once
 
-#include "Aliases.hpp"
+#include "../../../Kernel/Types.hpp"
 #include "Plane.hpp"
-#include "Vector3.hpp"
-#include "Matrix4.hpp"
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
+#include "../Empire.Engine/Engine/Math/Matrix/Matrix4.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Frustum
+    namespace Math
     {
-        Plane Near;
-        Plane Far;
-        Plane Left;
-        Plane Right;
-        Plane Top;
-        Plane Bottom;
+        using namespace Kernel;
+        struct Frustum
+        {
+            Plane Near;
+            Plane Far;
+            Plane Left;
+            Plane Right;
+            Plane Top;
+            Plane Bottom;
 
-        static Frustum FromMatrix(const Matrix4& ViewProjection) noexcept;
+            static Frustum FromMatrix(const Matrix4& ViewProjection) noexcept;
 
-        b8 ContainsPoint(const Vector3& Point) const noexcept;
-    };
+            Types::b8 ContainsPoint(const Vector3& Point) const noexcept;
+        };
+    }
 }

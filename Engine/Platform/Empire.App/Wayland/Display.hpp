@@ -1,11 +1,11 @@
 #pragma once 
 
 #include <wayland-client.h>
-#include "Types.hpp"
+#include "../Empire.Engine/Kernel/Types.hpp"
 
 namespace Platform
 {
-    using namespace Engine;
+    using namespace Engine::Kernel;
 
     namespace Wayland
     {
@@ -21,11 +21,11 @@ namespace Platform
                 Display(Display&& other) noexcept;
                 Display& operator=(Display&& other) noexcept;
 
-                b8 Dispatch();
-                b8 DispatchPending();
-                b8 Roundtrip();
+                Types::b8 Dispatch();
+                Types::b8 DispatchPending();
+                Types::b8 Roundtrip();
 
-                i32 GetFd() const;
+                Types::i32 GetFd() const;
 
                 wl_display* Get() const;
                 wl_registry* GetRegistry() const;

@@ -1,23 +1,25 @@
 #pragma once
 
-#include "Aliases.hpp"
-#include "Vector3.hpp"
+#include "../../../Kernel/Types.hpp"
+#include "../Empire.Engine/Engine/Math/Vector/Vector3.hpp"
 
-using namespace Engine;
-
-namespace Math
+namespace Engine
 {
-    struct Ray
+    namespace Math
     {
-        Vector3 Origin;
-        Vector3 Direction;
+        using namespace Kernel;
+        struct Ray
+        {
+            Vector3 Origin;
+            Vector3 Direction;
 
-        Ray() noexcept;
-        Ray(const Vector3& Origin, const Vector3& Direction) noexcept;
+            Ray() noexcept;
+            Ray(const Vector3& Origin, const Vector3& Direction) noexcept;
 
-        Vector3 GetPoint(f32 Distance) const noexcept;
+            Vector3 GetPoint(Types::f32 Distance) const noexcept;
 
-        b8 operator==(const Ray& Other) const noexcept;
-        b8 operator!=(const Ray& Other) const noexcept;
-    };
+            Types::b8 operator==(const Ray& Other) const noexcept;
+            Types::b8 operator!=(const Ray& Other) const noexcept;
+        };
+    }
 }
