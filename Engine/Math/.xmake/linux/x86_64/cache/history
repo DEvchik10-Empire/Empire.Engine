@@ -20,6 +20,7 @@
         "xmake -rv",
         "xmake ",
         "xmake f -c",
-        "xmake -rv"
+        "xmake -rv",
+        "xmake "
     }
 }

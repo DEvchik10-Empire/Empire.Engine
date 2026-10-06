@@ -3,37 +3,39 @@
 #include <wayland-client.h>
 #include "../Empire.Engine/Kernel/Types.hpp"
 
-namespace Platform
+namespace Engine
 {
-    using namespace Engine::Kernel;
-
-    namespace Wayland
+    namespace Platform
     {
-        class Display
+        using namespace Kernel;
+
+        namespace Wayland
         {
-            public: 
-                Display();
-                ~Display();
+            class Display
+            {
+                public:
+                    Display();
+                    ~Display();
 
-                Display(const Display&) = delete;
-                Display& operator=(const Display&) = delete;
+                    Display(const Display&) = delete;
+                    Display& operator=(const Display&) = delete;
+                    Display(Display&& other) noexcept;
+                    Display& operator=(Display&& other) noexcept;
 
-                Display(Display&& other) noexcept;
-                Display& operator=(Display&& other) noexcept;
+                    Types::b8 Dispatch();
+                    Types::b8 DispatchPending();
+                    Types::b8 Roundtrip();
 
-                Types::b8 Dispatch();
-                Types::b8 DispatchPending();
-                Types::b8 Roundtrip();
+                    Types::i32 GetFd() const;
 
-                Types::i32 GetFd() const;
+                    wl_display* Get() const;
+                    wl_registry* GetRegistry() const;
 
-                wl_display* Get() const;
-                wl_registry* GetRegistry() const;
+                    void Flush();
 
-                void Flush();
-
-            private:
-                wl_display* display;
-        };
+                private:
+                    wl_display* display;
+            };
+        }
     }
 }

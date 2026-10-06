@@ -1,82 +1,82 @@
-
 #include "Display.hpp"
 
-namespace Platform
+namespace Engine
 {
-
-    namespace Wayland
+    namespace Platform
     {
-        Display::Display()
+        namespace Wayland
         {
-            display = wl_display_connect(nullptr);
-        }
-
-        Display::~Display()
-        {
-            if (display)
+            Display::Display()
             {
-                wl_display_disconnect(Get());
+                display = wl_display_connect(nullptr);
             }
-        }
 
-        Display::Display(Display&& other) noexcept
-            : display(other.display)
-        {
-            other.display = nullptr;
-        }
-
-        Display& Display::operator=(Display&& other) noexcept
-        {
-            if (this == &other)
+            Display::~Display()
             {
+                if (display)
+                {
+                    wl_display_disconnect(display);
+                }
+            }
+
+            Display::Display(Display&& other) noexcept
+                : display(other.display)
+            {
+                other.display = nullptr;
+            }
+
+            Display& Display::operator=(Display&& other) noexcept
+            {
+                if (this == &other)
+                {
+                    return *this;
+                }
+
+                if (display)
+                {
+                    wl_display_disconnect(display);
+                }
+
+                display = other.display;
+                other.display = nullptr;
+
                 return *this;
             }
 
-            if (display)
+            Types::b8 Display::Dispatch()
             {
-                wl_display_disconnect(display);
+                return wl_display_dispatch(Get()) != -1;
             }
 
-            display = other.display;
-            other.display = nullptr;
+            Types::b8 Display::DispatchPending()
+            {
+                return wl_display_dispatch_pending(Get()) != -1;
+            }
 
-            return *this;
+            Types::b8 Display::Roundtrip()
+            {
+                return wl_display_roundtrip(Get()) != -1;
+            }
+
+            Types::i32 Display::GetFd() const
+            {
+                return wl_display_get_fd(Get());
+            }
+
+            wl_display* Display::Get() const
+            {
+                return display;
+            }
+
+            wl_registry* Display::GetRegistry() const
+            {
+                return wl_display_get_registry(Get());
+            }
+
+            void Display::Flush()
+            {
+                wl_display_flush(Get());
+            }
         }
-
-        Types::b8 Display::Dispatch()
-        {
-            return wl_display_dispatch(Get()) != -1;
-        }
-
-        Types::b8 Display::DispatchPending()
-        {
-            return wl_display_dispatch_pending(Get()) != -1;
-        }
-
-        Types::b8 Display::Roundtrip()
-        {
-            return wl_display_roundtrip(Get()) != -1;
-        }
-
-        Types::i32 Display::GetFd() const
-        {
-            return wl_display_get_fd(Get());
-        }
-
-        wl_display* Display::Get() const
-        {
-            return display;
-        }
-
-        wl_registry* Display::GetRegistry() const
-        {
-            return wl_display_get_registry(Get());
-        }
-
-        void Display::Flush()
-        {
-            wl_display_flush(Get());
-        }
-
     }
 }
