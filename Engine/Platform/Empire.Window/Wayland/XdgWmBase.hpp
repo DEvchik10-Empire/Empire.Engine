@@ -2,7 +2,8 @@
 #pragma once
 
 #include "../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h"
-#include "../Platform/Empire.App/Wayland/Interface.hpp"
+//#include "../Platform/Empire.App/Wayland/Interface.hpp"
+#include "Empire.App/Wayland/Interface.hpp"
 #include "../Empire.Engine/Kernel/Types.hpp"
 #include <wayland-client.h>
 

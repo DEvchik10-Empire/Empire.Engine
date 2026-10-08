@@ -48,7 +48,7 @@ namespace Engine
                     Compositor& compositor,
                     XdgWmBase& wmBase,
                     Shm& shm,
-                    const char* title
+                    const Types::String& title
                 );
 
                 bool ShouldClose() const;

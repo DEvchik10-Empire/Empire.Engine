@@ -150,7 +150,7 @@ namespace Engine
 
 
             void Impl::SetTitle(
-                const char* title
+                const Types::String& title
             )
             {
                 (void)title;
@@ -287,6 +287,11 @@ namespace Engine
             Types::b8 Impl::HasFocus() const
             {
                 return false;
+            }
+
+            WindowBackend Wayland::Impl::GetBackend() const
+            {
+                return WindowBackend::Wayland;
             }
         }
     }

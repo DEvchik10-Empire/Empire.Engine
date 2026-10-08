@@ -10,7 +10,7 @@ namespace Engine
                 Compositor& compositor,
                 XdgWmBase& wmBase,
                 Shm& shm,
-                const char* title
+                const Types::String& title
             )
             {
                 this->shm = &shm;
@@ -56,7 +56,7 @@ namespace Engine
                     return false;
                 }
 
-                xdgToplevel.SetTitle(title);
+                xdgToplevel.SetTitle(title.c_str());
 
                 /*
                  * Initial commit.

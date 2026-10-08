@@ -1,20 +1,20 @@
 {
     depfiles_format = "gcc",
-    depfiles = "xdg-shell-protocol.o: ThirdParty/Wayland/xdg-shell-protocol.c\
-",
     values = {
         "/usr/bin/gcc",
         {
             "-m64",
             "-fvisibility=hidden",
             "-O3",
-            "-I../..",
-            "-I.",
-            "-IThirdParty/Wayland",
+            "-I/home/devchik10/Documents/Empire.Engine",
+            "-I/home/devchik10/Documents/Empire.Engine/Engine/Platform",
+            "-I/home/devchik10/Documents/Empire.Engine/Engine/Platform/ThirdParty/Wayland",
             "-DNDEBUG"
         }
     },
     files = {
         "ThirdParty/Wayland/xdg-shell-protocol.c"
-    }
+    },
+    depfiles = "xdg-shell-protocol.o: ThirdParty/Wayland/xdg-shell-protocol.c\
+"
 }

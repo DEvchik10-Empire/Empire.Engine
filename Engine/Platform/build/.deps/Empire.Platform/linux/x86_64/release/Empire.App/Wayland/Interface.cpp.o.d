@@ -1,7 +1,5 @@
 {
     depfiles_format = "gcc",
-    depfiles = "Interface.o: Empire.App/Wayland/Interface.cpp  Empire.App/Wayland/Interface.hpp ../../../Empire.Engine/Kernel/Types.hpp\
-",
     values = {
         "/usr/bin/g++",
         {
@@ -10,13 +8,15 @@
             "-fvisibility-inlines-hidden",
             "-O3",
             "-std=c++23",
-            "-I../..",
-            "-I.",
-            "-IThirdParty/Wayland",
+            "-I/home/devchik10/Documents/Empire.Engine",
+            "-I/home/devchik10/Documents/Empire.Engine/Engine/Platform",
+            "-I/home/devchik10/Documents/Empire.Engine/Engine/Platform/ThirdParty/Wayland",
             "-DNDEBUG"
         }
     },
     files = {
         "Empire.App/Wayland/Interface.cpp"
-    }
+    },
+    depfiles = "Interface.o: Empire.App/Wayland/Interface.cpp  Empire.App/Wayland/Interface.hpp  /home/devchik10/Documents/Empire.Engine/../Empire.Engine/Kernel/Types.hpp\
+"
 }

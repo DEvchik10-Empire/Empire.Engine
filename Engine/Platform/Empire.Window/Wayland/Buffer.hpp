@@ -3,7 +3,7 @@
 #include <memory>
 #include <wayland-client.h>
 
-#include "../../Empire.App/Wayland/Interface.hpp"
+#include "Kernel/Types.hpp"
 
 namespace Engine
 {
@@ -19,7 +19,7 @@ namespace Engine
                 wl_buffer* buffer = nullptr;
                 void* data = nullptr;
 
-                int fd = -1;
+                Types::i fd = -1;
 
                 Types::u32 width = 0;
                 Types::u32 height = 0;

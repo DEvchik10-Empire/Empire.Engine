@@ -2,7 +2,9 @@
 
 #include <utility>
 
-#include "WindowConfig.hpp"
+#include "Kernel/Types.hpp"
+#include "../WindowConfig.hpp"
+#include "../IWindowImpl.hpp"
 
 namespace Engine
 {
@@ -10,74 +12,71 @@ namespace Engine
     {
         namespace Wayland
         {
-            class Impl
+            using namespace Kernel;
+
+            class Impl : public IWindowImpl
             {
             public:
-                explicit Impl(
-                    const WindowConfig& config
-                );
-
-                ~Impl();
+                explicit Impl(const WindowConfig& config);
+                ~Impl() override;
 
                 Impl(const Impl&) = delete;
                 Impl& operator=(const Impl&) = delete;
 
-                Types::b8 PollEvent();
-
-                Types::b8 ShouldClose() const;
-
-                void Close();
-
-                Types::b8 IsOpen() const;
+                Types::b8 PollEvent() override;
+                Types::b8 ShouldClose() const override;
+                void Close() override;
+                Types::b8 IsOpen() const override;
 
                 void SetTitle(
-                    const char* title
-                );
+                    const Types::String& title
+                ) override;
 
                 std::pair<Types::i32, Types::i32>
-                GetPosition() const;
+                GetPosition() const override;
 
                 void SetPosition(
                     Types::i32 x,
                     Types::i32 y
-                );
+                ) override;
 
                 std::pair<Types::i32, Types::i32>
-                GetSize() const;
+                GetSize() const override;
 
                 void SetSize(
                     Types::i32 width,
                     Types::i32 height
-                );
+                ) override;
 
                 void SetResizable(
                     Types::b8 resizable
-                );
+                ) override;
 
-                Types::b8 IsResizable() const;
+                Types::b8 IsResizable() const override;
 
-                void Show();
-                void Hide();
-                void Minimize();
-                void Maximize();
-                void Restore();
+                void Show() override;
+                void Hide() override;
+                void Minimize() override;
+                void Maximize() override;
+                void Restore() override;
 
                 void SetFullscreen(
                     Types::b8 fullscreen
-                );
+                ) override;
 
-                Types::b8 IsFullscreen() const;
+                Types::b8 IsFullscreen() const override;
 
                 void SetAlwaysOnTop(
                     Types::b8 onTop
-                );
+                ) override;
 
-                Types::b8 IsAlwaysOnTop() const;
+                Types::b8 IsAlwaysOnTop() const override;
 
-                Types::b8 WasResized();
-                Types::b8 WasMoved();
+                Types::b8 WasResized() override;
+                Types::b8 WasMoved() override;
+                Types::b8 HasFocus() const override;
 
-                Types::b8 HasFocus() const;
+                WindowBackend GetBackend() const override;
 
             private:
                 struct Data;
