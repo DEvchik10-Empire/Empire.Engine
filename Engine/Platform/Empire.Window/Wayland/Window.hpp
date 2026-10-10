@@ -33,6 +33,7 @@ namespace Engine
 
                 bool configured = false;
                 bool shouldClose = false;
+                bool destroyed = false;
 
                 bool CreateBuffer();
                 void Draw();
@@ -50,6 +51,11 @@ namespace Engine
                     Shm& shm,
                     const Types::String& title
                 );
+
+                // Реально убирает окно: уничтожает wl_buffer, xdg_toplevel,
+                // xdg_surface и wl_surface (в таком порядке). Можно звать много раз.
+                // После этого вызови Display::Flush(), чтобы запросы дошли до композитора.
+                void Destroy();
 
                 bool ShouldClose() const;
                 bool IsConfigured() const;

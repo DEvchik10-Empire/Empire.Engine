@@ -1,4 +1,10 @@
 {
+    values = {
+        "/usr/bin/ar",
+        {
+            "-cr"
+        }
+    },
     files = {
         "build/.objs/Empire.Platform/linux/x86_64/release/Engine/Platform/Empire.App/legasy/Connection.cpp.o",
         "build/.objs/Empire.Platform/linux/x86_64/release/Engine/Platform/Empire.App/legasy/EventQueue.cpp.o",
@@ -17,11 +23,5 @@
         "build/.objs/Empire.Platform/linux/x86_64/release/Engine/Platform/Empire.Window/Wayland/XdgWmBase.cpp.o",
         "build/.objs/Empire.Platform/linux/x86_64/release/Engine/Platform/Empire.Window/WindowImplFactory.cpp.o",
         "build/.objs/Empire.Platform/linux/x86_64/release/Engine/Platform/ThirdParty/Wayland/xdg-shell-protocol.c.o"
-    },
-    values = {
-        "/usr/bin/ar",
-        {
-            "-cr"
-        }
     }
 }

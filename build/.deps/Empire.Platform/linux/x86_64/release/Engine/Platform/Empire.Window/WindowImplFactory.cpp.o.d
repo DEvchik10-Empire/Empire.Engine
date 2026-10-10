@@ -1,9 +1,4 @@
 {
-    depfiles = "WindowImplFactory.o: Engine/Platform/Empire.Window/WindowImplFactory.cpp  Engine/Platform/Empire.Window/WindowImplFactory.hpp  Engine/Platform/Empire.Window/IWindowImpl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/WindowConfig.hpp  Engine/Platform/Empire.Window/WindowBackend.hpp  Engine/Platform/Empire.Window/Wayland/Impl.hpp  Engine/Platform/Empire.Window/legasy/Impl.hpp\
-",
-    files = {
-        "Engine/Platform/Empire.Window/WindowImplFactory.cpp"
-    },
     values = {
         "/usr/bin/g++",
         {
@@ -18,5 +13,10 @@
             "-DNDEBUG"
         }
     },
-    depfiles_format = "gcc"
+    depfiles = "WindowImplFactory.o: Engine/Platform/Empire.Window/WindowImplFactory.cpp  Engine/Platform/Empire.Window/WindowImplFactory.hpp  Engine/Platform/Empire.Window/IWindowImpl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/WindowConfig.hpp  Engine/Platform/Empire.Window/WindowBackend.hpp  Engine/Platform/Empire.Window/Wayland/Impl.hpp  Engine/Platform/Empire.Window/legasy/Impl.hpp\
+",
+    depfiles_format = "gcc",
+    files = {
+        "Engine/Platform/Empire.Window/WindowImplFactory.cpp"
+    }
 }

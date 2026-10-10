@@ -89,6 +89,9 @@ namespace Engine
                         closed = true;
                         return;
                     }
+
+                    // Отправляем первый commit сразу, не дожидаясь первого PollEvent.
+                    display.Flush();
                 }
             };
 
@@ -108,6 +111,11 @@ namespace Engine
             }
 
 
+            // НЕ блокирующий.
+            // true  -> обработано хотя бы одно событие
+            // false -> очередь пуста (или окно закрыто / соединение умерло)
+            //
+            // Использование:  while (window.PollEvent()) {}
             Types::b8 Impl::PollEvent()
             {
                 if (!data || data->closed)
@@ -115,7 +123,18 @@ namespace Engine
                     return false;
                 }
 
-                return data->display.Dispatch();
+                const Types::i32 handled =
+                    data->display.PumpEvents();
+
+                if (handled < 0)
+                {
+                    // Соединение с композитором умерло.
+                    data->window.Destroy();
+                    data->closed = true;
+                    return false;
+                }
+
+                return handled > 0;
             }
 
 
@@ -132,12 +151,18 @@ namespace Engine
             }
 
 
+            // Реально закрывает окно: уничтожает объекты и отправляет запросы
+            // композитору (flush), иначе окно останется висеть на экране.
+            // Безопасно звать много раз.
             void Impl::Close()
             {
-                if (!data)
+                if (!data || data->closed)
                 {
                     return;
                 }
+
+                data->window.Destroy();
+                data->display.Flush();
 
                 data->closed = true;
             }

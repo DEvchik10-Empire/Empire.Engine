@@ -1,8 +1,4 @@
 {
-    files = {
-        "build/linux/x86_64/release/libEmpire.Platform.a",
-        "build/.objs/Empire.Platform.Test.Wayland/linux/x86_64/release/Engine/Platform/Tests/Wayland/TestMain.cpp.o"
-    },
     values = {
         "/usr/bin/g++",
         {
@@ -14,5 +10,9 @@
             "-lm",
             "-lxcb"
         }
+    },
+    files = {
+        "build/linux/x86_64/release/libEmpire.Platform.a",
+        "build/.objs/Empire.Platform.Test.Wayland/linux/x86_64/release/Engine/Platform/Tests/Wayland/TestMain.cpp.o"
     }
 }

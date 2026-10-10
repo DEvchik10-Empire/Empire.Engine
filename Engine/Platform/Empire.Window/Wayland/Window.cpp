@@ -75,6 +75,11 @@ namespace Engine
                 Types::i32 height
             )
             {
+                if (destroyed)
+                {
+                    return;
+                }
+
                 if (width > 0)
                 {
                     this->width =
@@ -104,7 +109,34 @@ namespace Engine
 
             void Window::OnClose()
             {
+                /*
+                 * xdg_toplevel.close - это только ПРОСЬБА закрыть окно
+                 * ("пользователь нажал крестик"), само окно композитор
+                 * не убирает. Здесь только ставим флаг, а уничтожение делает
+                 * приложение через Destroy() (см. Impl::Close).
+                 */
                 shouldClose = true;
+            }
+
+
+            void Window::Destroy()
+            {
+                if (destroyed)
+                {
+                    return;
+                }
+
+                destroyed = true;
+                shouldClose = true;
+
+                /*
+                 * Порядок важен: сначала то, что создано позже.
+                 * buffer -> xdg_toplevel -> xdg_surface -> wl_surface
+                 */
+                buffer.reset();
+                xdgToplevel.Reset();
+                xdgSurface.Reset();
+                surface.Reset();
             }
 
 

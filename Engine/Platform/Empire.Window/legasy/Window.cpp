@@ -330,21 +330,32 @@ namespace Engine
                 xcb_flush(conn);
             }
  
-            Window::~Window()
+            // WM_DELETE_WINDOW - это только ПРОСЬБА закрыть окно ("нажали крестик").
+            // Окно исчезнет, только когда мы сами его уничтожим.
+            void Window::Destroy()
             {
+                if (window == 0)
+                    return;
+
                 xcb_connection_t* conn =
                     Connection::Instance().get();
- 
+
                 EventQueue::Instance().UnregisterWindow(window);
- 
-                if (window != 0)
-                {
-                    xcb_destroy_window(
-                        conn,
-                        window);
- 
-                    xcb_flush(conn);
-                }
+
+                xcb_destroy_window(
+                    conn,
+                    window);
+
+                // Без flush запрос просто лежит в буфере и окно остаётся на экране.
+                xcb_flush(conn);
+
+                window = 0;
+                closeRequested = true;
+            }
+
+            Window::~Window()
+            {
+                Destroy();
             }
  
             xcb_window_t Window::Get() const

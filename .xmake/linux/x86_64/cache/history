@@ -35,6 +35,9 @@
         "xmake run Empire.Platform.Test.auto",
         "xmake ",
         "xmake run Empire.Platform.Test.auto",
-        "xmake run Empire.Platform.Test.auto"
+        "xmake run Empire.Platform.Test.auto",
+        "xmake check -v",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua"
     }
 }

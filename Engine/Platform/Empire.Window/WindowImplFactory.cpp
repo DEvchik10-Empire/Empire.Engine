@@ -7,6 +7,37 @@ namespace Engine
 {
     namespace Platform
     {
+        namespace
+        {
+            // Пробуем создать бэкенд. Любая неудача (нет композитора, нет DISPLAY,
+            // исключение из конструктора) = nullptr, чтобы Auto мог перейти
+            // к следующему бэкенду, а не падать.
+            template <typename T>
+            std::unique_ptr<IWindowImpl>
+            TryCreate(
+                const WindowConfig& config
+            )
+            {
+                try
+                {
+                    auto impl =
+                        std::make_unique<T>(
+                            config
+                        );
+
+                    if (impl->IsOpen())
+                    {
+                        return impl;
+                    }
+                }
+                catch (...)
+                {
+                }
+
+                return nullptr;
+            }
+        }
+
         std::unique_ptr<IWindowImpl>
         CreateWindowImpl(
             const WindowConfig& config
@@ -16,61 +47,28 @@ namespace Engine
             {
                 case WindowBackend::Wayland:
                 {
-                    auto impl =
-                        std::make_unique<Wayland::Impl>(
-                            config
-                        );
-
-                    if (!impl->IsOpen())
-                    {
-                        return nullptr;
-                    }
-
-                    return impl;
+                    return TryCreate<Wayland::Impl>(
+                        config
+                    );
                 }
 
                 case WindowBackend::legasy:
                 {
-                    auto impl =
-                        std::make_unique<legasy::Impl>(
-                            config
-                        );
-
-                    if (!impl->IsOpen())
-                    {
-                        return nullptr;
-                    }
-
-                    return impl;
+                    return TryCreate<legasy::Impl>(
+                        config
+                    );
                 }
 
                 case WindowBackend::Auto:
                 {
+                    if (auto impl = TryCreate<Wayland::Impl>(config))
                     {
-                        auto impl =
-                            std::make_unique<Wayland::Impl>(
-                                config
-                            );
-
-                        if (impl->IsOpen())
-                        {
-                            return impl;
-                        }
+                        return impl;
                     }
 
-                    {
-                        auto impl =
-                            std::make_unique<legasy::Impl>(
-                                config
-                            );
-
-                        if (impl->IsOpen())
-                        {
-                            return impl;
-                        }
-                    }
-
-                    return nullptr;
+                    return TryCreate<legasy::Impl>(
+                        config
+                    );
                 }
             }
 

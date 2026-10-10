@@ -86,6 +86,9 @@ namespace Engine
 
                 void SetTitle(const char* title);
 
+                // Уничтожает xdg_toplevel. Можно звать много раз.
+                void Reset();
+
                 xdg_toplevel* Get() const;
             };
 
@@ -133,6 +136,9 @@ namespace Engine
                 );
 
                 XdgToplevel CreateToplevel();
+
+                // Уничтожает xdg_surface. Можно звать много раз.
+                void Reset();
 
                 xdg_surface* Get() const;
             };

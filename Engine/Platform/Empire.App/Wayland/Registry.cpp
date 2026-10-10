@@ -19,7 +19,19 @@ namespace Engine
 
             Registry::Registry(Display& display)
             {
+                // Нет соединения с композитором (например, чистый X11 без
+                // WAYLAND_DISPLAY): раньше тут был вызов с nullptr -> segfault.
+                if (!display.Get())
+                {
+                    return;
+                }
+
                 registry = wl_display_get_registry(display.Get());
+
+                if (!registry)
+                {
+                    return;
+                }
 
                 wl_registry_add_listener(
                     registry,

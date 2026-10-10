@@ -1,282 +1,141 @@
+#include <chrono>
+#include <cstddef>
+#include <cstring>
 #include <iostream>
 #include <memory>
+#include <thread>
+#include <vector>
 
 #include "Empire.Window/IWindowImpl.hpp"
-#include "Empire.Window/WindowConfig.hpp"
 #include "Empire.Window/WindowBackend.hpp"
+#include "Empire.Window/WindowConfig.hpp"
 #include "Empire.Window/WindowImplFactory.hpp"
 
+using namespace Engine::Platform;
 
-namespace Engine
+namespace
 {
-    namespace Platform
+    const char* BackendName(WindowBackend backend)
     {
-        const char* BackendName(
-            WindowBackend backend
-        )
+        switch (backend)
         {
-            switch (backend)
-            {
-                case WindowBackend::Auto:
-                    return "Auto";
-
-                case WindowBackend::Wayland:
-                    return "Wayland";
-
-                case WindowBackend::legasy:
-                    return "legasy";
-            }
-
-            return "Unknown";
+            case WindowBackend::Auto:    return "Auto";
+            case WindowBackend::Wayland: return "Wayland";
+            case WindowBackend::legasy:  return "legasy";
         }
+
+        return "Unknown";
     }
+
+    // Запуск:  ./test            -> Auto
+    //          ./test wayland    -> только Wayland
+    //          ./test legasy     -> только X11 (XCB)
+    WindowBackend ParseBackend(int argc, char** argv)
+    {
+        if (argc > 1)
+        {
+            if (std::strcmp(argv[1], "wayland") == 0)
+                return WindowBackend::Wayland;
+
+            if (std::strcmp(argv[1], "legasy") == 0)
+                return WindowBackend::legasy;
+        }
+
+        return WindowBackend::Auto;
+    }
+
+    struct Entry
+    {
+        int id;
+        std::unique_ptr<IWindowImpl> window;
+    };
 }
 
-
-int main()
+int main(int argc, char** argv)
 {
-    using namespace Engine::Platform;
+    const WindowBackend backend = ParseBackend(argc, argv);
 
-    std::cout
-        << "=== Empire.Window IWindowImpl Test ===\n\n";
+    std::cout << "=== 4 windows test, backend: "
+              << BackendName(backend) << " ===\n";
 
+    struct Size { int width; int height; };
 
-    /*
-     * ---------------------------------------------------------
-     * Auto backend
-     * ---------------------------------------------------------
-     */
+    const Size sizes[] = {
+        { 800, 600 },
+        { 500, 400 },
+        { 600, 500 },
+        { 400, 300 },
+    };
 
-    std::cout
-        << "[Test] Creating Auto backend...\n";
+    // ---------------------------------------------------------
+    // Создаём 4 окна
+    // ---------------------------------------------------------
+    std::vector<Entry> windows;
 
-    WindowConfig autoConfig;
-
-    autoConfig.width = 800;
-    autoConfig.height = 600;
-    autoConfig.title = "Empire Engine - Auto";
-    autoConfig.backend = WindowBackend::Auto;
-
-    std::unique_ptr<IWindowImpl> autoWindow =
-        CreateWindowImpl(autoConfig);
-
-    std::cout
-        << "[Test] Requested backend: "
-        << BackendName(autoConfig.backend)
-        << '\n';
-
-    if (!autoWindow)
+    for (int i = 0; i < 4; ++i)
     {
-        std::cout
-            << "[Test] FAILED: Auto backend could not create a window.\n";
+        WindowConfig config;
 
-        return 1;
+        config.width = sizes[i].width;
+        config.height = sizes[i].height;
+        config.title = "Empire Engine - Window " + std::to_string(i + 1);
+        config.backend = backend;
+
+        std::unique_ptr<IWindowImpl> window = CreateWindowImpl(config);
+
+        if (!window || !window->IsOpen())
+        {
+            std::cout << "[Test] FAILED: window " << (i + 1)
+                      << " was not created.\n";
+            return 1;
+        }
+
+        window->Show();
+
+        std::cout << "[Test] Window " << (i + 1)
+                  << " created, backend: "
+                  << BackendName(window->GetBackend()) << '\n';
+
+        windows.push_back({ i + 1, std::move(window) });
     }
 
-    std::cout
-        << "[Test] Selected backend:  "
-        << BackendName(autoWindow->GetBackend())
-        << '\n';
+    std::cout << "[Test] Close the windows one by one (any order).\n"
+              << "[Test] The program exits when the last one is closed.\n\n";
 
-    std::cout
-        << "[Test] Is open:            "
-        << (autoWindow->IsOpen() ? "yes" : "no")
-        << '\n';
-
-    if (!autoWindow->IsOpen())
+    // ---------------------------------------------------------
+    // Главный цикл: пока есть хотя бы одно окно
+    // ---------------------------------------------------------
+    while (!windows.empty())
     {
-        std::cout
-            << "[Test] FAILED: Auto backend returned a closed window.\n";
+        for (auto it = windows.begin(); it != windows.end();)
+        {
+            IWindowImpl& window = *it->window;
 
-        return 1;
+            // false из PollEvent = "очередь пуста", а не ошибка.
+            while (window.IsOpen() && window.PollEvent())
+            {
+            }
+
+            if (window.ShouldClose())
+            {
+                window.Close();             // убрать окно с экрана
+                const int id = it->id;
+                it = windows.erase(it);     // и освободить объект
+
+                std::cout << "[Test] Window " << id
+                          << " closed, left: " << windows.size() << '\n';
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        // Пока нет рендера - не жжём 100% ядра.
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    autoWindow->SetTitle(
-        "Empire Engine - Auto Test"
-    );
-
-    autoWindow->Show();
-
-    std::cout
-        << "[Test] Auto selected: "
-        << BackendName(autoWindow->GetBackend())
-        << '\n';
-
-    std::cout
-        << "[Test] Auto window is open.\n"
-        << "[Test] Close the window to continue...\n\n";
-
-    while (!autoWindow->ShouldClose())
-    {
-        autoWindow->PollEvent();
-    }
-
-    std::cout
-        << "[Test] Auto window closed.\n\n";
-
-
-    /*
-     * ---------------------------------------------------------
-     * Explicit Wayland backend
-     * ---------------------------------------------------------
-     */
-
-    std::cout
-        << "[Test] Creating explicit Wayland backend...\n";
-
-    WindowConfig waylandConfig;
-
-    waylandConfig.width = 800;
-    waylandConfig.height = 600;
-    waylandConfig.title = "Empire Engine - Wayland";
-    waylandConfig.backend = WindowBackend::Wayland;
-
-    std::unique_ptr<IWindowImpl> wayland =
-        CreateWindowImpl(waylandConfig);
-
-    std::cout
-        << "[Test] Requested backend: "
-        << BackendName(waylandConfig.backend)
-        << '\n';
-
-    if (!wayland)
-    {
-        std::cout
-            << "[Test] FAILED: Wayland backend could not create a window.\n";
-
-        return 1;
-    }
-
-    std::cout
-        << "[Test] Selected backend:  "
-        << BackendName(wayland->GetBackend())
-        << '\n';
-
-    std::cout
-        << "[Test] Is open:            "
-        << (wayland->IsOpen() ? "yes" : "no")
-        << '\n';
-
-    if (!wayland->IsOpen())
-    {
-        std::cout
-            << "[Test] FAILED: Wayland window is not open.\n";
-
-        return 1;
-    }
-
-    if (wayland->GetBackend() != WindowBackend::Wayland)
-    {
-        std::cout
-            << "[Test] FAILED: Wrong backend was selected.\n";
-
-        return 1;
-    }
-
-    wayland->SetTitle(
-        "Empire Engine - Wayland Test"
-    );
-
-    wayland->Show();
-
-    std::cout
-        << "[Test] Wayland window is open.\n"
-        << "[Test] Close the window to continue...\n\n";
-
-    while (!wayland->ShouldClose())
-    {
-        wayland->PollEvent();
-    }
-
-    std::cout
-        << "[Test] Wayland window closed.\n\n";
-
-
-    /*
-     * ---------------------------------------------------------
-     * Explicit legasy backend
-     * ---------------------------------------------------------
-     */
-
-    std::cout
-        << "[Test] Creating explicit legasy backend...\n";
-
-    WindowConfig legasyConfig;
-
-    legasyConfig.width = 800;
-    legasyConfig.height = 600;
-    legasyConfig.title = "Empire Engine - legasy";
-    legasyConfig.backend = WindowBackend::legasy;
-
-    std::unique_ptr<IWindowImpl> legasy =
-        CreateWindowImpl(legasyConfig);
-
-    std::cout
-        << "[Test] Requested backend: "
-        << BackendName(legasyConfig.backend)
-        << '\n';
-
-    if (!legasy)
-    {
-        std::cout
-            << "[Test] FAILED: legasy backend could not create a window.\n";
-
-        return 1;
-    }
-
-    std::cout
-        << "[Test] Selected backend:  "
-        << BackendName(legasy->GetBackend())
-        << '\n';
-
-    std::cout
-        << "[Test] Is open:            "
-        << (legasy->IsOpen() ? "yes" : "no")
-        << '\n';
-
-    if (!legasy->IsOpen())
-    {
-        std::cout
-            << "[Test] FAILED: legasy window is not open.\n";
-
-        return 1;
-    }
-
-    if (legasy->GetBackend() != WindowBackend::legasy)
-    {
-        std::cout
-            << "[Test] FAILED: Wrong backend was selected.\n";
-
-        return 1;
-    }
-
-    legasy->SetTitle(
-        "Empire Engine - legasy Test"
-    );
-
-    legasy->Show();
-
-    std::cout
-        << "[Test] legasy window is open.\n"
-        << "[Test] Close the window to finish the test...\n\n";
-
-    while (!legasy->ShouldClose())
-    {
-        legasy->PollEvent();
-    }
-
-    std::cout
-        << "[Test] legasy window closed.\n\n";
-
-
-    /*
-     * ---------------------------------------------------------
-     * Finished
-     * ---------------------------------------------------------
-     */
-
-    std::cout
-        << "=== All tests passed ===\n";
+    std::cout << "=== All windows closed ===\n";
 
     return 0;
 }

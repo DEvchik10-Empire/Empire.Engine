@@ -23,6 +23,9 @@ namespace Engine
 
                 xcb_window_t Get() const;
 
+                // Реально уничтожает окно на X-сервере. Можно звать много раз.
+                void Destroy();
+
                 Types::b8 PollEvent();
                 Types::b8 ShouldClose() const;
 

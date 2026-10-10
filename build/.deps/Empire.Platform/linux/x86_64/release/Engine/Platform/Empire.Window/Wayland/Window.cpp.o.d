@@ -1,10 +1,7 @@
 {
-    depfiles = "Window.o: Engine/Platform/Empire.Window/Wayland/Window.cpp  Engine/Platform/Empire.Window/Wayland/Window.hpp  Engine/Platform/Empire.Window/Wayland/Surface.hpp  /home/devchik10/Documents/Empire.Engine/../Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  Engine/Platform/Empire.Window/Wayland/Shm.hpp  Engine/Platform/Empire.Window/Wayland/ShmPool.hpp  Engine/Platform/Empire.Window/Wayland/Buffer.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Compositor.hpp\
-",
-    files = {
-        "Engine/Platform/Empire.Window/Wayland/Window.cpp"
-    },
     depfiles_format = "gcc",
+    depfiles = "Window.o: Engine/Platform/Empire.Window/Wayland/Window.cpp  Engine/Platform/Empire.Window/Wayland/Window.hpp  Engine/Platform/Empire.Window/Wayland/Surface.hpp  /home/devchik10/Documents/Empire.Engine/../Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  Engine/Platform/Empire.Window/Wayland/Shm.hpp  Engine/Platform/Empire.Window/Wayland/ShmPool.hpp  Engine/Platform/Empire.Window/Wayland/Buffer.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Compositor.hpp\
+",
     values = {
         "/usr/bin/g++",
         {
@@ -18,5 +15,8 @@
             "-I/home/devchik10/Documents/Empire.Engine/Engine/Platform/ThirdParty/Wayland",
             "-DNDEBUG"
         }
+    },
+    files = {
+        "Engine/Platform/Empire.Window/Wayland/Window.cpp"
     }
 }

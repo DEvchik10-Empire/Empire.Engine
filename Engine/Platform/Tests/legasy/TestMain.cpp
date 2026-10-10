@@ -19,6 +19,13 @@ namespace Engine
                     while (window.IsOpen() && window.PollEvent())
                     {
                     }
+
+                    // Пользователь нажал крестик -> реально убираем окно.
+                    // Close() можно звать много раз.
+                    if (window.ShouldClose())
+                    {
+                        window.Close();
+                    }
                 }
             }
 

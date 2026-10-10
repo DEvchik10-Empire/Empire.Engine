@@ -1,6 +1,6 @@
 {
     depfiles_format = "gcc",
-    depfiles = "XdgWmBase.o: Engine/Platform/Empire.Window/Wayland/XdgWmBase.cpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  /home/devchik10/Documents/Empire.Engine/../Empire.Engine/Kernel/Types.hpp\
+    depfiles = "XdgWmBase.o: Engine/Platform/Empire.Window/Wayland/XdgWmBase.cpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  /home/devchik10/Documents/Empire.Engine/../Empire.Engine/Kernel/Types.hpp\
 ",
     values = {
         "/usr/bin/g++",

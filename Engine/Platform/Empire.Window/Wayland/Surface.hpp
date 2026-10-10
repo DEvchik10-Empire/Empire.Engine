@@ -106,6 +106,9 @@ namespace Engine
                 void SetFrame();
 
                 Types::b8 Init(SurfaceCallbacks* callbacks);
+
+                // Уничтожает wl_surface (и frame callback). Можно звать много раз.
+                void Reset();
             };
         }
     }

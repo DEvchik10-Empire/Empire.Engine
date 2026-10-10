@@ -62,14 +62,17 @@ namespace Engine
             }
 
 
+            // Реально закрывает окно (уничтожает его на X-сервере).
+            // Безопасно звать много раз.
             void Impl::Close()
             {
-                if (!data)
+                if (!data || data->closed)
                 {
                     return;
                 }
 
                 data->closed = true;
+                data->window.Destroy();
             }
 
 

@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <wayland-client.h>
 #include "../Empire.Engine/Kernel/Types.hpp"
@@ -22,9 +22,15 @@ namespace Engine
                     Display(Display&& other) noexcept;
                     Display& operator=(Display&& other) noexcept;
 
+                    // БЛОКИРУЮЩИЙ: ждёт события. Для игрового цикла не подходит.
                     Types::b8 Dispatch();
                     Types::b8 DispatchPending();
                     Types::b8 Roundtrip();
+
+                    // НЕ блокирующий: читает сокет, раздаёт события.
+                    // Возвращает число обработанных событий (0 = очередь пуста),
+                    // либо -1, если соединение с композитором умерло.
+                    Types::i32 PumpEvents();
 
                     Types::i32 GetFd() const;
 
@@ -34,7 +40,7 @@ namespace Engine
                     void Flush();
 
                 private:
-                    wl_display* display;
+                    wl_display* display = nullptr;
             };
         }
     }

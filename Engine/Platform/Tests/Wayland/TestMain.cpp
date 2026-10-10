@@ -1,3 +1,6 @@
+#include <chrono>
+#include <thread>
+
 #include "../../Empire.Window/Wayland/Impl.hpp"
 
 namespace Engine
@@ -6,6 +9,26 @@ namespace Engine
     {
         namespace Wayland
         {
+            namespace
+            {
+                // Вычитываем ВСЕ накопившиеся события окна.
+                // false из PollEvent = "очередь пуста", а не "ошибка/выход",
+                // поэтому тут нет никакого break.
+                void Pump(Impl& window)
+                {
+                    while (window.IsOpen() && window.PollEvent())
+                    {
+                    }
+
+                    // Пользователь нажал крестик -> реально убираем окно.
+                    // Close() можно звать много раз.
+                    if (window.ShouldClose())
+                    {
+                        window.Close();
+                    }
+                }
+            }
+
             void RunTest()
             {
                 WindowConfig config1;
@@ -44,37 +67,15 @@ namespace Engine
                     window4.IsOpen()
                 )
                 {
-                    if (window1.IsOpen())
-                    {
-                        if (!window1.PollEvent())
-                        {
-                            break;
-                        }
-                    }
+                    Pump(window1);
+                    Pump(window2);
+                    Pump(window3);
+                    Pump(window4);
 
-                    if (window2.IsOpen())
-                    {
-                        if (!window2.PollEvent())
-                        {
-                            break;
-                        }
-                    }
-
-                    if (window3.IsOpen())
-                    {
-                        if (!window3.PollEvent())
-                        {
-                            break;
-                        }
-                    }
-
-                    if (window4.IsOpen())
-                    {
-                        if (!window4.PollEvent())
-                        {
-                            break;
-                        }
-                    }
+                    // Пока нет рендера - не жжём 100% ядра.
+                    // Когда появится рендер, это место займёт кадр.
+                    std::this_thread::sleep_for(
+                        std::chrono::milliseconds(1));
                 }
             }
         }

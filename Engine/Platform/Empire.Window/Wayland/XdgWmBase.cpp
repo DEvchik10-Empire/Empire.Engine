@@ -28,13 +28,21 @@ namespace Engine
             }
 
 
-            XdgToplevel::~XdgToplevel()
+            void XdgToplevel::Reset()
             {
                 if (toplevel)
                 {
                     xdg_toplevel_destroy(toplevel);
                     toplevel = nullptr;
                 }
+
+                callbacks = nullptr;
+            }
+
+
+            XdgToplevel::~XdgToplevel()
+            {
+                Reset();
             }
 
 
@@ -58,10 +66,7 @@ namespace Engine
                     return *this;
                 }
 
-                if (toplevel)
-                {
-                    xdg_toplevel_destroy(toplevel);
-                }
+                Reset();
 
                 toplevel = other.toplevel;
                 callbacks = other.callbacks;
@@ -188,13 +193,21 @@ namespace Engine
             }
 
 
-            XdgSurface::~XdgSurface()
+            void XdgSurface::Reset()
             {
                 if (surface)
                 {
                     xdg_surface_destroy(surface);
                     surface = nullptr;
                 }
+
+                callbacks = nullptr;
+            }
+
+
+            XdgSurface::~XdgSurface()
+            {
+                Reset();
             }
 
 
@@ -218,10 +231,7 @@ namespace Engine
                     return *this;
                 }
 
-                if (surface)
-                {
-                    xdg_surface_destroy(surface);
-                }
+                Reset();
 
                 surface = other.surface;
                 callbacks = other.callbacks;

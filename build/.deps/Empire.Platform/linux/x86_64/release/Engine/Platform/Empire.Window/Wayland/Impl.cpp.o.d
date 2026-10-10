@@ -1,6 +1,4 @@
 {
-    depfiles = "Impl.o: Engine/Platform/Empire.Window/Wayland/Impl.cpp  Engine/Platform/Empire.Window/Wayland/Impl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/Wayland/../WindowConfig.hpp  Engine/Platform/Empire.Window/Wayland/../WindowBackend.hpp  Engine/Platform/Empire.Window/Wayland/../IWindowImpl.hpp  Engine/Platform/Empire.Window/Wayland/Window.hpp  Engine/Platform/Empire.Window/Wayland/Surface.hpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  Engine/Platform/Empire.Window/Wayland/Shm.hpp  Engine/Platform/Empire.Window/Wayland/ShmPool.hpp  Engine/Platform/Empire.Window/Wayland/Buffer.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Compositor.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Display.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Registry.hpp\
-",
     values = {
         "/usr/bin/g++",
         {
@@ -15,6 +13,8 @@
             "-DNDEBUG"
         }
     },
+    depfiles = "Impl.o: Engine/Platform/Empire.Window/Wayland/Impl.cpp  Engine/Platform/Empire.Window/Wayland/Impl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Empire.Window/Wayland/../WindowConfig.hpp  Engine/Platform/Empire.Window/Wayland/../WindowBackend.hpp  Engine/Platform/Empire.Window/Wayland/../IWindowImpl.hpp  Engine/Platform/Empire.Window/Wayland/Window.hpp  Engine/Platform/Empire.Window/Wayland/Surface.hpp  Engine/Platform/Empire.Window/Wayland/XdgWmBase.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/../Platform/ThirdParty/Wayland/xdg-shell-client-protocol.h  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.App/Wayland/Interface.hpp  Engine/Platform/Empire.Window/Wayland/Shm.hpp  Engine/Platform/Empire.Window/Wayland/ShmPool.hpp  Engine/Platform/Empire.Window/Wayland/Buffer.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Compositor.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Display.hpp  Engine/Platform/Empire.Window/Wayland/../../Empire.App/Wayland/Registry.hpp\
+",
     depfiles_format = "gcc",
     files = {
         "Engine/Platform/Empire.Window/Wayland/Impl.cpp"

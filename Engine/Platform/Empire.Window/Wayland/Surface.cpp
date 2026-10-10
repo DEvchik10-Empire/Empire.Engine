@@ -28,7 +28,7 @@ namespace Engine
             }
 
 
-            Surface::~Surface()
+            void Surface::Reset()
             {
                 if (frame)
                 {
@@ -41,6 +41,14 @@ namespace Engine
                     wl_surface_destroy(surface);
                     surface = nullptr;
                 }
+
+                callbacks = nullptr;
+            }
+
+
+            Surface::~Surface()
+            {
+                Reset();
             }
 
 
@@ -62,15 +70,7 @@ namespace Engine
                     return *this;
                 }
 
-                if (frame)
-                {
-                    wl_callback_destroy(frame);
-                }
-
-                if (surface)
-                {
-                    wl_surface_destroy(surface);
-                }
+                Reset();
 
                 surface = other.surface;
                 frame = other.frame;
