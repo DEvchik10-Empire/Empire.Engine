@@ -1,11 +1,16 @@
 {
     mtimes = {
-        ["Engine/Math/xmake.lua"] = 1791117943,
-        ["xmake.lua"] = 1791409926,
-        ["Engine/Platform/xmake.lua"] = 1791420176
+        ["Engine/Math/xmake.lua"] = 1791481019,
+        ["Shaders/xmake.lua"] = 1791673571,
+        ["Engine/Rendering/xmake.lua"] = 1791674015,
+        ["xmake.lua"] = 1791674015,
+        ["Tests/xmake.lua"] = 1791674265,
+        ["Engine/Platform/xmake.lua"] = 1791481019
     },
-    recheck = false,
     options = {
-        clean = true
-    }
+        plat = "linux",
+        arch = "x86_64",
+        mode = "release"
+    },
+    recheck = false
 }

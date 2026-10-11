@@ -1,7 +1,9 @@
 {
-    depfiles_format = "gcc",
     depfiles = "Matrix4.o: Engine/Math/Matrix/Matrix4.cpp Engine/Math/Matrix/Matrix4.hpp  Engine/Math/Matrix/../../../Kernel/Types.hpp  ../Empire.Engine/Engine/Math/Vector/Vector3.hpp  ../Empire.Engine/Engine/Math//Vector/Vector4.hpp\
 ",
+    files = {
+        "Engine/Math/Matrix/Matrix4.cpp"
+    },
     values = {
         "/usr/bin/g++",
         {
@@ -15,7 +17,5 @@
             "-DNDEBUG"
         }
     },
-    files = {
-        "Engine/Math/Matrix/Matrix4.cpp"
-    }
+    depfiles_format = "gcc"
 }

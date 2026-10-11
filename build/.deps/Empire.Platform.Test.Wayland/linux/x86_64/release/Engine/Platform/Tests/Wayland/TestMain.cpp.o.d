@@ -1,4 +1,7 @@
 {
+    depfiles = "TestMain.o: Engine/Platform/Tests/Wayland/TestMain.cpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/Impl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../WindowConfig.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../WindowBackend.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../IWindowImpl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/NativeWindowHandle.hpp\
+",
+    depfiles_format = "gcc",
     values = {
         "/usr/bin/g++",
         {
@@ -13,9 +16,6 @@
             "-DNDEBUG"
         }
     },
-    depfiles = "TestMain.o: Engine/Platform/Tests/Wayland/TestMain.cpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/Impl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../WindowConfig.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../WindowBackend.hpp  Engine/Platform/Tests/Wayland/../../Empire.Window/Wayland/../IWindowImpl.hpp\
-",
-    depfiles_format = "gcc",
     files = {
         "Engine/Platform/Tests/Wayland/TestMain.cpp"
     }

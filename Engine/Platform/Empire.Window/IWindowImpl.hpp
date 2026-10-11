@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "Kernel/Types.hpp"
+#include "Kernel/NativeWindowHandle.hpp"
 #include "WindowConfig.hpp"
 
 namespace Engine
@@ -69,6 +70,10 @@ namespace Engine
             virtual Types::b8 HasFocus() const = 0;
 
             virtual WindowBackend GetBackend() const = 0;
+
+            // Нативные хэндлы окна для рендера (см. Kernel/NativeWindowHandle.hpp).
+            // Если окно закрыто, kind == None.
+            virtual NativeWindowHandle GetNativeHandle() const = 0;
 
         protected:
             IWindowImpl() = default;

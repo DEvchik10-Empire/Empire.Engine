@@ -1,10 +1,4 @@
 {
-    values = {
-        "/usr/bin/ar",
-        {
-            "-cr"
-        }
-    },
     files = {
         "build/.objs/Math/linux/x86_64/release/Engine/Math/Geometry/AABB.cpp.o",
         "build/.objs/Math/linux/x86_64/release/Engine/Math/Geometry/Bezier.cpp.o",
@@ -23,5 +17,11 @@
         "build/.objs/Math/linux/x86_64/release/Engine/Math/Vector/Vector2.cpp.o",
         "build/.objs/Math/linux/x86_64/release/Engine/Math/Vector/Vector3.cpp.o",
         "build/.objs/Math/linux/x86_64/release/Engine/Math/Vector/Vector4.cpp.o"
+    },
+    values = {
+        "/usr/bin/ar",
+        {
+            "-cr"
+        }
     }
 }

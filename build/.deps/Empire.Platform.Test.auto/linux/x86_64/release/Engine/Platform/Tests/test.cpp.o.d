@@ -17,6 +17,6 @@
             "-DNDEBUG"
         }
     },
-    depfiles = "test.o: Engine/Platform/Tests/test.cpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/IWindowImpl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowConfig.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowBackend.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowImplFactory.hpp\
+    depfiles = "test.o: Engine/Platform/Tests/test.cpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/IWindowImpl.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/NativeWindowHandle.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowConfig.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowBackend.hpp  /home/devchik10/Documents/Empire.Engine/Engine/Platform/Empire.Window/WindowImplFactory.hpp\
 "
 }

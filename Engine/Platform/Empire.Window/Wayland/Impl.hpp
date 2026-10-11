@@ -78,6 +78,8 @@ namespace Engine
 
                 WindowBackend GetBackend() const override;
 
+                NativeWindowHandle GetNativeHandle() const override;
+
             private:
                 struct Data;
 

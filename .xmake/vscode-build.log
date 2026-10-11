@@ -1,0 +1,5 @@
+[Shaders] Sky.hlsl (vert)
+[Shaders] Sky.hlsl (frag)
+[Shaders] Cube.hlsl (vert)
+[Shaders] Cube.hlsl (frag)
+[100%]: build ok, spent 0.199s

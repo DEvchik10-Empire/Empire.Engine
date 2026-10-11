@@ -35,6 +35,10 @@ namespace Engine
                 bool shouldClose = false;
                 bool destroyed = false;
 
+                // true  - окно само рисует серый фон (wl_shm)
+                // false - поверхность целиком принадлежит рендеру (Vulkan)
+                bool selfDraw = true;
+
                 bool CreateBuffer();
                 void Draw();
 
@@ -44,6 +48,18 @@ namespace Engine
 
                 Window(const Window&) = delete;
                 Window& operator=(const Window&) = delete;
+
+                // Вызвать ДО Init().
+                // width/height <= 0 -> размер выберет композитор (или 800x600).
+                // Начальный размер используется только при selfDraw == false.
+                void Configure(
+                    Types::i32 width,
+                    Types::i32 height,
+                    bool selfDraw
+                );
+
+                // wl_surface для рендера. nullptr после Destroy().
+                wl_surface* GetSurface() const;
 
                 bool Init(
                     Compositor& compositor,
