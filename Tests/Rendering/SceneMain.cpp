@@ -15,9 +15,8 @@
  *   --no-validation     без validation layers
  *   --mesh=knot|sphere|cube      встроенная модель (по умолчанию cube)
  *   --model=путь.obj             своя модель (центрируется и масштабируется сама)
- *   --time=day|sunset|night      время суток (по умолчанию sunset)
- *   --cycle                      непрерывная смена дня и ночи
- *   --cycle-seconds=N            длительность суток в секундах (по умолчанию 60)
+ *   --sky-debug=N                отладка неба: 1 - текстура формы облаков,
+ *                                2 - текстура шума, 3 - плотность облаков, 4 - mip-уровень
  *   --shaders=папка              где лежат .spv (по умолчанию: см. ResolveShaderDir)
  */
 
@@ -49,6 +48,8 @@
 #include "Empire.Pipeline/Vulkan/VkUniformSet.hpp"
 #include "Empire.Pipeline/Vulkan/VkGraphicsPipeline.hpp"
 #include "Empire.Mesh/Mesh.hpp"
+#include "Empire.Texture/NoiseImage.hpp"
+#include "Empire.Texture/Vulkan/VkTexture2D.hpp"
 
 #include "SceneMath.hpp"
 
@@ -102,66 +103,63 @@ namespace
                   "SceneUniformData must match cbuffer SceneParams");
 
     // =====================================================================
-    // Пресеты неба (цвета в sRGB, как в Godot; в шейдер уходят линейными).
+    // Пресеты неба: ТОЧНЫЕ значения из day_sky.tres / night_sky.tres
+    // (gdquest-demos/godot-4-stylized-sky). Цвета - sRGB, как в Godot
+    // (source_color); в шейдер уходят линейными.
     // =====================================================================
     struct SkyPreset
     {
-        Vec3 top, bottom, scatter, cloudsLight, astroTint, shootingTint, light;
+        Vec3 top, bottom, sunScatter, cloudsLight, astroTint, shootingTint, light;
 
         float cloudsDensity;
-        float starsIntensity;
-        float shootingStars;
+        float cloudsScale;
+        float cloudsSmoothness;
+        float cloudsShadowIntensity;
         float highClouds;
+
+        float astroScale;
         float astroIntensity;
-        float lightIntensity;
-        float exposure;
-    };
+        float astroEdge0;     // края радиального градиента astro_sampler
+        float astroEdge1;
 
-    const SkyPreset PresetDay =
-    {
-        {0.12f, 0.36f, 0.85f}, {0.65f, 0.80f, 0.97f}, {0.12f, 0.06f, 0.00f},
-        {1.00f, 1.00f, 1.00f}, {1.00f, 0.95f, 0.80f}, {0.0f, 0.0f, 0.0f},
-        {1.00f, 0.96f, 0.88f},
-        0.40f, 0.0f, 0.0f, 0.45f, 1.0f, 3.2f, 1.0f
-    };
+        float stars;
+        float shootingStars;
 
-    const SkyPreset PresetSunset =
-    {
-        {0.12f, 0.18f, 0.45f}, {0.98f, 0.55f, 0.30f}, {0.80f, 0.30f, 0.05f},
-        {1.00f, 0.75f, 0.55f}, {1.00f, 0.70f, 0.40f}, {0.0f, 0.0f, 0.0f},
-        {1.00f, 0.55f, 0.28f},
-        0.42f, 0.0f, 0.0f, 0.40f, 2.0f, 2.6f, 1.0f
+        float lightIntensity; // для освещения модели (в Godot это DirectionalLight)
     };
 
     const SkyPreset PresetNight =
     {
-        {0.015f, 0.03f, 0.10f}, {0.05f, 0.08f, 0.20f}, {0.00f, 0.01f, 0.05f},
-        {0.25f, 0.30f, 0.50f}, {0.80f, 0.90f, 1.00f}, {0.80f, 0.90f, 1.00f},
-        {0.45f, 0.58f, 1.00f},
-        0.33f, 1.6f, 2.5f, 0.25f, 1.2f, 0.45f, 1.15f
+        {0.027451f, 0.101961f, 0.250980f},
+        {0.027451f, 0.101961f, 0.250980f},
+        {0.125490f, 0.086275f, 0.372549f},
+        {0.227451f, 0.447059f, 1.0f},
+        {1.0f, 1.0f, 1.0f},
+        {1.0f, 0.662745f, 0.419608f},
+        {0.45f, 0.58f, 1.0f},
+        0.4f, 1.0f, 0.05f, 8.0f, 0.0f,
+        6.0f, 1.2f, 0.58f, 0.6f,
+        5.0f, 4.0f,
+        0.45f
     };
 
-    float Smoothstep(float edge0, float edge1, float x)
-    {
-        const float t = std::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
-        return t * t * (3.0f - 2.0f * t);
-    }
+    // Сколько шагов ray-march (в Godot clouds_samples 8..32, shadow_sample 1..4).
+    constexpr float CloudsSamples = 32.0f;
+    constexpr float CloudsShadowSamples = 4.0f;
 
+    // Тонемаппинг как в превью GDQuest (Filmic) + небольшой запас яркости.
+    constexpr float Exposure = 1.1f;
+
+    // Точная sRGB -> линейное.
     float SrgbToLinear(float c)
     {
-        return std::pow(std::max(c, 0.0f), 2.2f);
+        c = std::max(c, 0.0f);
+        return c <= 0.04045f ? c / 12.92f : std::pow((c + 0.055f) / 1.055f, 2.4f);
     }
 
     Float4 ToLinear(Vec3 srgb, float w = 0.0f)
     {
         return {SrgbToLinear(srgb.x), SrgbToLinear(srgb.y), SrgbToLinear(srgb.z), w};
-    }
-
-    // Смешивает три пресета по весам (сумма = 1).
-    template <typename Member>
-    auto Blend(const Member SkyPreset::*field, float wDay, float wSunset, float wNight)
-    {
-        return PresetDay.*field * wDay + PresetSunset.*field * wSunset + PresetNight.*field * wNight;
     }
 
     struct Options
@@ -175,10 +173,7 @@ namespace
         std::string modelPath;
         std::string shaderDir;
 
-        // Начальная высота солнца (радианы над горизонтом).
-        float startAngle = 0.12f;
-        bool cycle = false;
-        float cycleSeconds = 60.0f;
+        int skyDebug = 0;
     };
 
     const char* BackendName(Platform::WindowBackend backend)
@@ -205,24 +200,11 @@ namespace
             else if (std::strcmp(a, "legasy") == 0)          options.backend = Platform::WindowBackend::legasy;
             else if (std::strcmp(a, "auto") == 0)            options.backend = Platform::WindowBackend::Auto;
             else if (std::strcmp(a, "--no-validation") == 0) options.validation = false;
-            else if (std::strcmp(a, "--cycle") == 0)         options.cycle = true;
             else if (std::strncmp(a, "--frames=", 9) == 0)   options.maxFrames = static_cast<unsigned int>(std::strtoul(a + 9, nullptr, 10));
             else if (std::strncmp(a, "--mesh=", 7) == 0)     options.mesh = a + 7;
             else if (std::strncmp(a, "--model=", 8) == 0)    options.modelPath = a + 8;
             else if (std::strncmp(a, "--shaders=", 10) == 0) options.shaderDir = a + 10;
-            else if (std::strncmp(a, "--cycle-seconds=", 16) == 0)
-            {
-                options.cycleSeconds = std::max(1.0f, static_cast<float>(std::atof(a + 16)));
-            }
-            else if (std::strncmp(a, "--time=", 7) == 0)
-            {
-                const char* value = a + 7;
-
-                if (std::strcmp(value, "day") == 0)         options.startAngle = 1.0f;
-                else if (std::strcmp(value, "sunset") == 0) options.startAngle = 0.12f;
-                else if (std::strcmp(value, "night") == 0)  options.startAngle = -1.2f;
-                else std::cerr << "[Scene] Unknown --time value: " << value << '\n';
-            }
+            else if (std::strncmp(a, "--sky-debug=", 12) == 0) options.skyDebug = std::atoi(a + 12);
             else
             {
                 std::cerr << "[Scene] Unknown argument: " << a << '\n';
@@ -300,7 +282,7 @@ namespace
         SceneUniformData data;
 
         const Vec3 up{0, 1, 0};
-        const float fov = 60.0f * Pi / 180.0f;
+        const float fov = 75.0f * Pi / 180.0f; // как камера по умолчанию в Godot
         const float nearPlane = 0.1f;
         const float farPlane = 1000.0f;
 
@@ -310,72 +292,38 @@ namespace
         std::memcpy(data.viewProj, viewProj.m, sizeof(data.viewProj));
         std::memcpy(data.invViewProj, invViewProj.m, sizeof(data.invViewProj));
 
-        // ---- солнце ----
-        float angle = options.startAngle;
+        // ---- ночное небо: точные значения из night_sky.tres ----
+        const SkyPreset& p = PresetNight;
 
-        if (options.cycle)
-        {
-            angle += 2.0f * Pi * seconds / options.cycleSeconds;
-        }
-
-        const float azimuth = 0.6f;
-        const Vec3 sun{
-            std::cos(angle) * std::sin(azimuth),
-            std::sin(angle),
-            std::cos(angle) * std::cos(azimuth)};
-
-        // ---- веса пресетов по высоте солнца ----
-        const float e = sun.y;
-
-        const float wDay = Smoothstep(0.05f, 0.40f, e);
-        const float wNight = 1.0f - Smoothstep(-0.25f, 0.0f, e);
-        const float wSunset = std::max(0.0f, 1.0f - wDay - wNight);
-
-        // Под горизонтом "светило" - луна на противоположной стороне неба.
-        const Vec3 astro = e > -0.10f ? sun : sun * -1.0f;
+        // Луна (LIGHT0_DIRECTION): на старте камеры в левой верхней части кадра,
+        // как на превью GDQuest.
+        const Vec3 moon = Normalize({-0.30f, 0.55f, -0.78f});
 
         data.cameraPos = {eye.x, eye.y, eye.z, seconds};
-        data.lightDir = {astro.x, astro.y, astro.z, 0.0f};
+        data.lightDir = {moon.x, moon.y, moon.z, 0.0f};
 
-        const Vec3 light = Blend(&SkyPreset::light, wDay, wSunset, wNight);
-        const float lightIntensity = Blend(&SkyPreset::lightIntensity, wDay, wSunset, wNight);
-
-        // Цвет света уходит в шейдер уже линейным и с интенсивностью.
-        const Float4 lightLinear = ToLinear(light);
+        const Float4 lightLinear = ToLinear(p.light);
         data.lightColor = {
-            lightLinear.x * lightIntensity,
-            lightLinear.y * lightIntensity,
-            lightLinear.z * lightIntensity,
+            lightLinear.x * p.lightIntensity,
+            lightLinear.y * p.lightIntensity,
+            lightLinear.z * p.lightIntensity,
             0.0f};
 
-        data.topColor = ToLinear(Blend(&SkyPreset::top, wDay, wSunset, wNight));
-        data.bottomColor = ToLinear(Blend(&SkyPreset::bottom, wDay, wSunset, wNight));
-        data.sunScatter = ToLinear(Blend(&SkyPreset::scatter, wDay, wSunset, wNight));
-        data.cloudsLightColor = ToLinear(Blend(&SkyPreset::cloudsLight, wDay, wSunset, wNight));
-        data.astroTint = ToLinear(Blend(&SkyPreset::astroTint, wDay, wSunset, wNight));
-        data.shootingTint = ToLinear(Blend(&SkyPreset::shootingTint, wDay, wSunset, wNight));
+        data.topColor = ToLinear(p.top);
+        data.bottomColor = ToLinear(p.bottom);
+        data.sunScatter = ToLinear(p.sunScatter);
+        data.cloudsLightColor = ToLinear(p.cloudsLight);
+        data.shootingTint = ToLinear(p.shootingTint);
+        data.astroTint = ToLinear(p.astroTint);
 
-        // clouds_density / scale / smoothness / shadow_intensity (по умолчанию как в Godot).
-        data.cloudsParams = {
-            Blend(&SkyPreset::cloudsDensity, wDay, wSunset, wNight),
-            1.0f,
-            0.06f,   // smoothness: край облака
-            7.5f};   // shadow intensity
+        data.cloudsParams = {p.cloudsDensity, p.cloudsScale, p.cloudsSmoothness, p.cloudsShadowIntensity};
 
-        // clouds_samples = 16, shadow_sample = 4, high_clouds_density.
-        data.cloudsSamples = {
-            16.0f,
-            4.0f,
-            Blend(&SkyPreset::highClouds, wDay, wSunset, wNight),
-            0.0f};
+        // w - режим отладки неба (0 - выключено).
+        data.cloudsSamples = {CloudsSamples, CloudsShadowSamples, p.highClouds, static_cast<float>(options.skyDebug)};
 
-        data.skyParams = {
-            Blend(&SkyPreset::starsIntensity, wDay, wSunset, wNight),
-            Blend(&SkyPreset::shootingStars, wDay, wSunset, wNight),
-            Blend(&SkyPreset::astroIntensity, wDay, wSunset, wNight),
-            4.0f}; // astro_scale: больше -> диск меньше
+        data.skyParams = {p.stars, p.shootingStars, p.astroIntensity, p.astroScale};
 
-        data.misc = {encodeGamma ? 1.0f : 0.0f, Blend(&SkyPreset::exposure, wDay, wSunset, wNight), 0.0f, 0.0f};
+        data.misc = {encodeGamma ? 1.0f : 0.0f, Exposure, p.astroEdge0, p.astroEdge1};
 
         return data;
     }
@@ -417,8 +365,26 @@ namespace
         Vulkan::ShaderModule litVs(device, shaderDir + "/Lit.vs.spv");
         Vulkan::ShaderModule litPs(device, shaderDir + "/Lit.ps.spv");
 
+        // ---- текстуры неба (замена NoiseTexture2D из Godot) ----
+        // cloud_shape: fbm 10 окт. (у нас 8: выше 512 px октавы уже не видны),
+        // cloud_noise: fbm 5 окт., high_clouds: клеточный шум, shooting_star: оригинал GDQuest.
+        // cloud_shape: 1024 px, 6 октав (выше октавы мельче текселя и дают
+        // «ступеньки» на краях облаков), gain 7 + bias 0.6 - контраст и покрытие
+        // неба, сдвиг (224, 720) - какой участок шума окажется над головой.
+        // Это подгонка под вид превью GDQuest.
+        const Rendering::ImageR8 shapeImage = Rendering::MakeFbmNoiseImage(1024, 5, 6, 1, 7.0f, 224, 720, 0.6f);
+        const Rendering::ImageR8 noiseImage = Rendering::MakeFbmNoiseImage(512, 5, 5, 101);
+        const Rendering::ImageR8 highImage = Rendering::MakeCellularImage(512, 6, 201);
+        const Rendering::ImageR8 starImage = Rendering::GetOriginalShootingStarImage();
+
+        Vulkan::Texture2D cloudShapeTexture(device, shapeImage, true, true);
+        Vulkan::Texture2D cloudNoiseTexture(device, noiseImage, true, true);
+        Vulkan::Texture2D highCloudsTexture(device, highImage, true);
+        Vulkan::Texture2D shootingStarTexture(device, starImage, false);
+
         Vulkan::UniformSet uniforms(
-            device, sizeof(SceneUniformData), Vulkan::FrameContext::FramesInFlight);
+            device, sizeof(SceneUniformData), Vulkan::FrameContext::FramesInFlight,
+            {&cloudShapeTexture, &cloudNoiseTexture, &highCloudsTexture, &shootingStarTexture});
 
         Vulkan::GraphicsPipelineDesc skyDesc;
         skyDesc.renderPass = target.GetRenderPass();
@@ -515,9 +481,10 @@ namespace
             const float orbit = seconds * 0.12f;
             const Vec3 eye{
                 std::sin(orbit) * 3.2f,
-                0.35f + std::sin(seconds * 0.3f) * 0.25f,
+                0.10f + std::sin(seconds * 0.3f) * 0.15f,
                 std::cos(orbit) * 3.2f};
-            const Vec3 look{0.0f, 0.15f, 0.0f};
+            // Смотрим чуть выше модели: больше неба, горизонт ниже центра кадра.
+            const Vec3 look{0.0f, 1.1f, 0.0f};
 
             const float aspect = static_cast<float>(frame.extent.width) /
                                  static_cast<float>(std::max(1u, frame.extent.height));

@@ -22,6 +22,7 @@ target("Empire.Rendering")
         "Empire.SwapChain/Vulkan/*.cpp",
         "Empire.CommandBuffer/Vulkan/*.cpp",
         "Empire.Buffer/Vulkan/*.cpp",
+        "Empire.Texture/*.cpp",
         "Empire.Texture/Vulkan/*.cpp",
         "Empire.Shader/Vulkan/*.cpp",
         "Empire.Pipeline/Vulkan/*.cpp",

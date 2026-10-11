@@ -1,12 +1,12 @@
-
 set_project("Empire.Shaders")
 
 -- Скомпилированные .spv складываются в <корень проекта>/build/shaders
--- (этот путь знает тест сцены через define EMPIRE_SHADER_DIR).
+-- Путь используется тестом сцены через define EMPIRE_SHADER_DIR.
 
 -- HLSL -> SPIR-V через DXC (DirectXShaderCompiler).
--- *.vs.hlsl -> vs_6_0, *.ps.hlsl -> ps_6_0, точка входа всегда main.
--- Путь к dxc можно задать переменной окружения DXC.
+--   *.vs.hlsl -> vs_6_0
+--   *.ps.hlsl -> ps_6_0
+-- Точка входа всегда main.
 
 rule("hlsl2spv")
     set_extensions(".hlsl")
@@ -14,22 +14,49 @@ rule("hlsl2spv")
     on_buildcmd_file(function (target, batchcmds, sourcefile, opt)
         import("lib.detect.find_tool")
 
-        local outdir = path.join(os.projectdir(), "build", "shaders")
+        local root = os.projectdir()
+        local outdir = path.join(root, "build", "shaders")
 
-        local dxc = os.getenv("DXC")
-            or path.join(os.projectdir(), "ThirdParty", "dxc", "bin", "dxc")
+        -- Поиск DXC в ThirdParty/dxc/bin.
+        local dxc_dir = path.join(root, "ThirdParty", "dxc", "bin")
+        local dxc = nil
 
-        if not os.isfile(dxc) then
+        for _, candidate in ipairs({
+            path.join(dxc_dir, "dxc"),
+            path.join(dxc_dir, "dxc.exe")
+        }) do
+            if os.isfile(candidate) then
+                dxc = candidate
+                break
+            end
+        end
+
+        -- Переменная окружения DXC.
+        if not dxc then
+            local env_dxc = os.getenv("DXC")
+            if env_dxc and os.isfile(env_dxc) then
+                dxc = env_dxc
+            end
+        end
+
+        -- Системный PATH.
+        if not dxc then
             dxc = (find_tool("dxc") or {}).program
         end
 
-        assert(dxc, "dxc not found: install DirectXShaderCompiler or set DXC=/path/to/dxc")
+        assert(dxc, "dxc not found: check ThirdParty/dxc/bin or DXC")
 
-        local name = path.basename(path.basename(sourcefile))
-        local stage = path.extension(path.basename(sourcefile))
-        local profile = (stage == ".vs") and "vs_6_0" or "ps_6_0"
-        local kind = stage:sub(2)
-        local output = path.join(outdir, name .. "." .. kind .. ".spv")
+        -- Например, path.basename(sourcefile) возвращает Sky.vs.
+        local filename = path.basename(sourcefile)
+        local name, stage = filename:match("^(.*)%.([^.]+)$")
+
+        assert(
+            name and (stage == "vs" or stage == "ps"),
+            "Unsupported HLSL shader stage: " .. filename
+        )
+
+        local profile = (stage == "vs") and "vs_6_0" or "ps_6_0"
+        local output = path.join(outdir, name .. "." .. stage .. ".spv")
 
         batchcmds:show_progress(
             opt.progress,
@@ -53,7 +80,6 @@ rule("hlsl2spv")
         batchcmds:add_depfiles(
             os.files(path.join(path.directory(sourcefile), "Common", "*.hlsli"))
         )
-
         batchcmds:set_depmtime(os.mtime(output))
         batchcmds:set_depcache(target:dependfile(output))
     end)

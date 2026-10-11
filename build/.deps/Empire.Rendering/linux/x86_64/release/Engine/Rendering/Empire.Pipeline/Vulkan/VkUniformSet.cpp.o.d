@@ -1,9 +1,6 @@
 {
     depfiles_format = "gcc",
-    files = {
-        "Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.cpp"
-    },
-    depfiles = "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.cpp.o:  Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.cpp  Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/VkBuffer.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp\
+    depfiles = "VkUniformSet.o: Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.cpp  Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/VkBuffer.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Texture/Vulkan/VkTexture2D.hpp  Engine/Rendering/Empire.Pipeline/Vulkan/../../Empire.Texture/Vulkan/../NoiseImage.hpp\
 ",
     values = {
         "/usr/bin/g++",
@@ -17,5 +14,8 @@
             "-I/home/devchik10/Documents/Empire.Engine/Engine/Rendering",
             "-DNDEBUG"
         }
+    },
+    files = {
+        "Engine/Rendering/Empire.Pipeline/Vulkan/VkUniformSet.cpp"
     }
 }

@@ -6,35 +6,54 @@ namespace Engine
     {
         namespace Vulkan
         {
-            UniformSet::UniformSet(const Device& device, VkDeviceSize size, Types::u32 copies)
+            UniformSet::UniformSet(
+                const Device& device,
+                VkDeviceSize size,
+                Types::u32 copies,
+                const std::vector<const Texture2D*>& textures)
                 : device(device)
             {
                 try
                 {
-                    VkDescriptorSetLayoutBinding binding{};
-                    binding.binding = 0;
-                    binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    binding.descriptorCount = 1;
-                    binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                    std::vector<VkDescriptorSetLayoutBinding> bindings(1 + textures.size());
+
+                    bindings[0].binding = 0;
+                    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    bindings[0].descriptorCount = 1;
+                    bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                    for (std::size_t t = 0; t < textures.size(); ++t)
+                    {
+                        bindings[1 + t].binding = static_cast<Types::u32>(1 + t);
+                        bindings[1 + t].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                        bindings[1 + t].descriptorCount = 1;
+                        bindings[1 + t].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+                    }
 
                     VkDescriptorSetLayoutCreateInfo layoutInfo{};
                     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-                    layoutInfo.bindingCount = 1;
-                    layoutInfo.pBindings = &binding;
+                    layoutInfo.bindingCount = static_cast<Types::u32>(bindings.size());
+                    layoutInfo.pBindings = bindings.data();
 
                     Check(
                         vkCreateDescriptorSetLayout(device.Get(), &layoutInfo, nullptr, &layout),
                         "vkCreateDescriptorSetLayout");
 
-                    VkDescriptorPoolSize poolSize{};
-                    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    poolSize.descriptorCount = copies;
+                    std::vector<VkDescriptorPoolSize> poolSizes;
+                    poolSizes.push_back({VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, copies});
+
+                    if (!textures.empty())
+                    {
+                        poolSizes.push_back({
+                            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                            copies * static_cast<Types::u32>(textures.size())});
+                    }
 
                     VkDescriptorPoolCreateInfo poolInfo{};
                     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
                     poolInfo.maxSets = copies;
-                    poolInfo.poolSizeCount = 1;
-                    poolInfo.pPoolSizes = &poolSize;
+                    poolInfo.poolSizeCount = static_cast<Types::u32>(poolSizes.size());
+                    poolInfo.pPoolSizes = poolSizes.data();
 
                     Check(
                         vkCreateDescriptorPool(device.Get(), &poolInfo, nullptr, &pool),
@@ -64,15 +83,32 @@ namespace Engine
                         bufferInfo.offset = 0;
                         bufferInfo.range = size;
 
-                        VkWriteDescriptorSet write{};
-                        write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        write.dstSet = sets[i];
-                        write.dstBinding = 0;
-                        write.descriptorCount = 1;
-                        write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        write.pBufferInfo = &bufferInfo;
+                        std::vector<VkDescriptorImageInfo> imageInfos(textures.size());
+                        std::vector<VkWriteDescriptorSet> writes(1 + textures.size());
 
-                        vkUpdateDescriptorSets(device.Get(), 1, &write, 0, nullptr);
+                        writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                        writes[0].dstSet = sets[i];
+                        writes[0].dstBinding = 0;
+                        writes[0].descriptorCount = 1;
+                        writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                        writes[0].pBufferInfo = &bufferInfo;
+
+                        for (std::size_t t = 0; t < textures.size(); ++t)
+                        {
+                            imageInfos[t].sampler = textures[t]->GetSampler();
+                            imageInfos[t].imageView = textures[t]->GetView();
+                            imageInfos[t].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+                            writes[1 + t].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                            writes[1 + t].dstSet = sets[i];
+                            writes[1 + t].dstBinding = static_cast<Types::u32>(1 + t);
+                            writes[1 + t].descriptorCount = 1;
+                            writes[1 + t].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                            writes[1 + t].pImageInfo = &imageInfos[t];
+                        }
+
+                        vkUpdateDescriptorSets(
+                            device.Get(), static_cast<Types::u32>(writes.size()), writes.data(), 0, nullptr);
                     }
                 }
                 catch (...)
