@@ -43,6 +43,16 @@ namespace Engine
                     // Обязательно перед уничтожением ресурсов и resize swapchain.
                     void WaitIdle() const;
 
+                    // Индекс типа памяти, подходящего под typeBits и свойства.
+                    // Бросает исключение, если такого типа нет.
+                    Types::u32 FindMemoryType(
+                        Types::u32 typeBits,
+                        VkMemoryPropertyFlags properties
+                    ) const;
+
+                    // Лучший доступный формат буфера глубины.
+                    VkFormat FindDepthFormat() const;
+
                 private:
                     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
                     VkDevice handle = VK_NULL_HANDLE;

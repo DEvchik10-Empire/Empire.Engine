@@ -78,6 +78,21 @@ namespace Engine
                         Types::f32 alpha
                     );
 
+                    // Начинает render pass на всё изображение: очищает цвет и глубину,
+                    // ставит viewport и scissor. Изображение после EndRenderPass
+                    // сразу готово к показу (finalLayout = PRESENT_SRC).
+                    void BeginRenderPass(
+                        const FrameInfo& frame,
+                        VkRenderPass renderPass,
+                        VkFramebuffer framebuffer,
+                        Types::f32 red,
+                        Types::f32 green,
+                        Types::f32 blue,
+                        Types::f32 alpha
+                    );
+
+                    void EndRenderPass(const FrameInfo& frame);
+
                     FrameStatus End(const FrameInfo& frame);
 
                 private:

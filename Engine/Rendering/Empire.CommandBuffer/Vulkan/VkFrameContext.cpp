@@ -269,6 +269,50 @@ namespace Engine
                     0);
             }
 
+            void FrameContext::BeginRenderPass(
+                const FrameInfo& frame,
+                VkRenderPass renderPass,
+                VkFramebuffer framebuffer,
+                Types::f32 red,
+                Types::f32 green,
+                Types::f32 blue,
+                Types::f32 alpha)
+            {
+                VkClearValue clears[2]{};
+                clears[0].color = {{red, green, blue, alpha}};
+                clears[1].depthStencil = {1.0f, 0};
+
+                VkRenderPassBeginInfo info{};
+                info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                info.renderPass = renderPass;
+                info.framebuffer = framebuffer;
+                info.renderArea.offset = {0, 0};
+                info.renderArea.extent = frame.extent;
+                info.clearValueCount = 2;
+                info.pClearValues = clears;
+
+                vkCmdBeginRenderPass(frame.commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+
+                VkViewport viewport{};
+                viewport.x = 0.0f;
+                viewport.y = 0.0f;
+                viewport.width = static_cast<float>(frame.extent.width);
+                viewport.height = static_cast<float>(frame.extent.height);
+                viewport.minDepth = 0.0f;
+                viewport.maxDepth = 1.0f;
+
+                VkRect2D scissor{};
+                scissor.extent = frame.extent;
+
+                vkCmdSetViewport(frame.commandBuffer, 0, 1, &viewport);
+                vkCmdSetScissor(frame.commandBuffer, 0, 1, &scissor);
+            }
+
+            void FrameContext::EndRenderPass(const FrameInfo& frame)
+            {
+                vkCmdEndRenderPass(frame.commandBuffer);
+            }
+
             FrameStatus FrameContext::End(const FrameInfo& frame)
             {
                 PerFrame& slot = frames[frame.frameIndex];
@@ -280,9 +324,11 @@ namespace Engine
                 const VkSemaphore renderFinished =
                     swapChain.GetRenderFinishedSemaphore(frame.imageIndex);
 
-                // Закраска идёт на стадии TRANSFER: на ней и ждём изображение.
+                // Изображение нужно либо для закраски (TRANSFER), либо для
+                // render pass (COLOR_ATTACHMENT_OUTPUT): ждём на обеих стадиях.
                 const VkPipelineStageFlags waitStage =
-                    VK_PIPELINE_STAGE_TRANSFER_BIT;
+                    VK_PIPELINE_STAGE_TRANSFER_BIT |
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
                 VkSubmitInfo submitInfo{};
                 submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

@@ -20,7 +20,12 @@ target("Empire.Rendering")
     add_files(
         "Empire.Device/Vulkan/*.cpp",
         "Empire.SwapChain/Vulkan/*.cpp",
-        "Empire.CommandBuffer/Vulkan/*.cpp"
+        "Empire.CommandBuffer/Vulkan/*.cpp",
+        "Empire.Buffer/Vulkan/*.cpp",
+        "Empire.Texture/Vulkan/*.cpp",
+        "Empire.Shader/Vulkan/*.cpp",
+        "Empire.Pipeline/Vulkan/*.cpp",
+        "Empire.Mesh/*.cpp"
     )
 
     add_includedirs(

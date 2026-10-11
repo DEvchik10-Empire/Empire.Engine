@@ -46,3 +46,40 @@ target("Empire.Rendering.Test.Vulkan")
         "pkgconfig::wayland-client",
         "pkgconfig::xcb"
     )
+
+
+-- Тест 3D-сцены: небо (HLSL) + вращающаяся модель.
+-- Шейдеры собираются отдельно (нужен dxc):
+--
+--   xmake build Empire.Shaders
+--   xmake build Empire.Rendering.Test.Scene
+--   xmake run   Empire.Rendering.Test.Scene --time=night
+--   xmake run   Empire.Rendering.Test.Scene --cycle --mesh=sphere
+--   xmake run   Empire.Rendering.Test.Scene --model=path/to/model.obj
+target("Empire.Rendering.Test.Scene")
+    set_kind("binary")
+
+    add_files(
+        "Rendering/SceneMain.cpp"
+    )
+
+    add_deps(
+        "Empire.Platform",
+        "Empire.Rendering",
+        "Empire.Shaders"
+    )
+
+    add_includedirs(
+        EngineRoot,
+        PlatformRoot,
+        RenderingRoot,
+        path.join(PlatformRoot, "ThirdParty/Wayland")
+    )
+
+    add_defines('EMPIRE_SHADER_DIR="' .. path.join(EngineRoot, "build", "shaders") .. '"')
+
+    add_packages(
+        "pkgconfig::vulkan",
+        "pkgconfig::wayland-client",
+        "pkgconfig::xcb"
+    )

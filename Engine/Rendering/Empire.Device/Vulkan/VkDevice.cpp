@@ -223,6 +223,51 @@ namespace Engine
             {
                 Check(vkDeviceWaitIdle(handle), "vkDeviceWaitIdle");
             }
+
+            Types::u32 Device::FindMemoryType(
+                Types::u32 typeBits,
+                VkMemoryPropertyFlags properties) const
+            {
+                VkPhysicalDeviceMemoryProperties memory{};
+                vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memory);
+
+                for (Types::u32 i = 0; i < memory.memoryTypeCount; ++i)
+                {
+                    const Types::b8 allowed = (typeBits & (1u << i)) != 0;
+                    const Types::b8 matches =
+                        (memory.memoryTypes[i].propertyFlags & properties) == properties;
+
+                    if (allowed && matches)
+                    {
+                        return i;
+                    }
+                }
+
+                throw std::runtime_error("Vulkan: no suitable memory type");
+            }
+
+            VkFormat Device::FindDepthFormat() const
+            {
+                const VkFormat candidates[] =
+                {
+                    VK_FORMAT_D32_SFLOAT,
+                    VK_FORMAT_D32_SFLOAT_S8_UINT,
+                    VK_FORMAT_D24_UNORM_S8_UINT
+                };
+
+                for (const VkFormat format : candidates)
+                {
+                    VkFormatProperties props{};
+                    vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+
+                    if (props.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    {
+                        return format;
+                    }
+                }
+
+                throw std::runtime_error("Vulkan: no supported depth format");
+            }
         }
     }
 }
