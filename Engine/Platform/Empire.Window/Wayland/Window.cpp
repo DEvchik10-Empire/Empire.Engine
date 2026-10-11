@@ -6,6 +6,39 @@ namespace Engine
     {
         namespace Wayland
         {
+            void Window::Configure(
+                Types::i32 width,
+                Types::i32 height,
+                bool selfDraw
+            )
+            {
+                this->selfDraw = selfDraw;
+
+                if (selfDraw)
+                {
+                    // Старое поведение не меняем: размер задаёт
+                    // композитор, иначе 800x600 (см. CreateBuffer).
+                    return;
+                }
+
+                this->width =
+                    width > 0
+                        ? static_cast<Types::u32>(width)
+                        : 800;
+
+                this->height =
+                    height > 0
+                        ? static_cast<Types::u32>(height)
+                        : 600;
+            }
+
+
+            wl_surface* Window::GetSurface() const
+            {
+                return surface.Get();
+            }
+
+
             bool Window::Init(
                 Compositor& compositor,
                 XdgWmBase& wmBase,
@@ -97,6 +130,13 @@ namespace Engine
                 }
 
                 configured = true;
+
+                // Поверхность принадлежит рендеру: shm-буфер не создаём
+                // и ничего не рисуем, иначе он дерётся со swapchain.
+                if (!selfDraw)
+                {
+                    return;
+                }
 
                 if (!CreateBuffer())
                 {

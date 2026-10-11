@@ -79,6 +79,12 @@ namespace Engine
                         return;
                     }
 
+                    window.Configure(
+                        config.width,
+                        config.height,
+                        config.selfDraw
+                    );
+
                     if (!window.Init(
                         *compositor,
                         *wmBase,
@@ -92,6 +98,35 @@ namespace Engine
 
                     // Отправляем первый commit сразу, не дожидаясь первого PollEvent.
                     display.Flush();
+
+                    /*
+                     * Если поверхность отдана рендеру, до первого present
+                     * ОБЯЗАТЕЛЬНО должен прийти и быть подтверждён (ack)
+                     * первый configure: подключать буфер к xdg-поверхности
+                     * без этого нельзя. Поэтому ждём его здесь, а не в цикле.
+                     * (Окно с selfDraw == true это делает само и не меняется.)
+                     */
+                    if (!config.selfDraw)
+                    {
+                        for (
+                            Types::i32 attempt = 0;
+                            attempt < 16 && !window.IsConfigured();
+                            ++attempt
+                        )
+                        {
+                            if (!display.Roundtrip())
+                            {
+                                closed = true;
+                                return;
+                            }
+                        }
+
+                        if (!window.IsConfigured())
+                        {
+                            closed = true;
+                            return;
+                        }
+                    }
                 }
             };
 
@@ -317,6 +352,21 @@ namespace Engine
             WindowBackend Wayland::Impl::GetBackend() const
             {
                 return WindowBackend::Wayland;
+            }
+
+            NativeWindowHandle Wayland::Impl::GetNativeHandle() const
+            {
+                if (!data || data->closed)
+                {
+                    return NativeWindowHandle{};
+                }
+
+                return NativeWindowHandle::MakeWayland(
+                    data->display.Get(),
+                    data->window.GetSurface(),
+                    data->window.GetWidth(),
+                    data->window.GetHeight()
+                );
             }
         }
     }

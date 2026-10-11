@@ -2,6 +2,8 @@
 
 #include "Window.hpp"
 
+#include "../../Empire.App/legasy/Connection.hpp"
+
 namespace Engine
 {
     namespace Platform
@@ -309,6 +311,24 @@ namespace Engine
             WindowBackend legasy::Impl::GetBackend() const
             {
                 return WindowBackend::legasy;
+            }
+
+            NativeWindowHandle legasy::Impl::GetNativeHandle() const
+            {
+                if (!data || data->closed)
+                {
+                    return NativeWindowHandle{};
+                }
+
+                const auto [width, height] =
+                    data->window.GetSize();
+
+                return NativeWindowHandle::MakeXcb(
+                    Connection::Instance().get(),
+                    data->window.Get(),
+                    static_cast<Types::u32>(width),
+                    static_cast<Types::u32>(height)
+                );
             }
 
         }

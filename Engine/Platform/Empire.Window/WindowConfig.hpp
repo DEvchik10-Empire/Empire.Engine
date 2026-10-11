@@ -28,6 +28,19 @@ namespace Engine
 
             WindowBackend backend =
                 WindowBackend::Auto;
+
+            /*
+             * Только для Wayland.
+             *
+             * true  (по умолчанию) - окно само рисует серый фон через wl_shm.
+             * false                - окно НИЧЕГО не рисует: wl_surface целиком
+             *                        отдаётся рендеру (Vulkan и т.д.).
+             *                        Иначе shm-буфер и swapchain дерутся за
+             *                        одну поверхность.
+             *
+             * На X11 (legasy) этот флаг не нужен и игнорируется.
+             */
+            Types::b8 selfDraw = true;
         };
     }
 }

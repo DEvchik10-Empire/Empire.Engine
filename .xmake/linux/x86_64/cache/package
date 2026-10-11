@@ -1,25 +1,33 @@
 {
-    ["pkgconfig::wayland-client"] = {
-        static = true,
-        version = "1.26.0",
-        links = {
-            "wayland-client",
-            "m"
-        },
-        __requirestr = "pkgconfig::wayland-client",
+    ["pkgconfig::vulkan"] = {
+        version = "1.4.363",
+        libfiles = "/usr/lib/libvulkan.so",
         __enabled = true,
+        shared = true,
+        __requirestr = "pkgconfig::vulkan",
+        links = "vulkan"
+    },
+    ["pkgconfig::wayland-client"] = {
+        __requirestr = "pkgconfig::wayland-client",
         libfiles = {
             "/usr/lib/libwayland-client.so",
             "/usr/lib/libm.a"
         },
+        __enabled = true,
+        links = {
+            "wayland-client",
+            "m"
+        },
+        version = "1.26.0",
+        static = true,
         shared = true
     },
     ["pkgconfig::xcb"] = {
         version = "1.17.0",
-        links = "xcb",
-        __requirestr = "pkgconfig::xcb",
-        __enabled = true,
         libfiles = "/usr/lib/libxcb.so",
-        shared = true
+        __enabled = true,
+        shared = true,
+        __requirestr = "pkgconfig::xcb",
+        links = "xcb"
     }
 }

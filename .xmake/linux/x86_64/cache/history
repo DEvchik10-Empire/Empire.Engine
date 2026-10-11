@@ -38,6 +38,21 @@
         "xmake run Empire.Platform.Test.auto",
         "xmake check -v",
         "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
-        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua"
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
+        "xmake ",
+        "xmake lua /usr/share/xmake/actions/build/cleaner.lua",
+        "xmake run Empire.Rendering.Test.Vulkan",
+        "xmake build Empire.Rendering.Test.Vulkan",
+        "xmake ",
+        "xmake build Empire.Rendering.Test.Vulkan",
+        "xmake run Empire.Rendering.Test.Vulkan",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
+        "xmake check -v",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
+        "xmake run Empire.Rendering.Test.Vulkan",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
+        "xmake check -v",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
+        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua"
     }
 }

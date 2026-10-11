@@ -6,3 +6,5 @@ add_rules("mode.debug", "mode.release")
 
 includes("Engine/Math")
 includes("Engine/Platform")
+includes("Engine/Rendering")
+includes("Tests")
