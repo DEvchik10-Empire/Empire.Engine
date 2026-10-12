@@ -1,0 +1,14 @@
+{
+    recheck = false,
+    options = {
+        clean = true
+    },
+    mtimes = {
+        ["Engine/Math/xmake.lua"] = 1791481019,
+        ["Engine/Rendering/xmake.lua"] = 1791734820,
+        ["Tests/xmake.lua"] = 1791835027,
+        ["Engine/Platform/xmake.lua"] = 1791481019,
+        ["xmake.lua"] = 1791732798,
+        ["Shaders/xmake.lua"] = 1791751691
+    }
+}
