@@ -36,17 +36,9 @@ float4 main(PSInput input) : SV_Target0
 
     if (debugMode == 3)
     {
-        float3 cloudsDirection = float3(eye.xz / max(saturate(eye.y), 1e-4), 1.0);
-        float2 clouds = CloudRayMarch(cloudsDirection, g_lightDir.xyz, float2(0.0, 2.0));
-        return float4(clouds.x, clouds.y, 0.0, 1.0);
-    }
-
-    if (debugMode == 4)
-    {
         float2 xy = eye.xz / max(saturate(eye.y), 1e-4);
-        float footprint = max(length(ddx(xy)), length(ddy(xy)));
-        float lod = max(log2(max(footprint * 0.03 * 4.0 * g_cloudsParams.y * 1024.0, 1e-6)), 0.0);
-        return float4(lod / 8.0, lod / 8.0, lod / 8.0, 1.0);
+        float2 clouds = CloudRayMarch(xy, g_lightDir.xyz, ddx(xy) * 2.0, ddy(xy) * 2.0);
+        return float4(clouds.x, clouds.y, 0.0, 1.0);
     }
 
     float3 color = SkyFull(eye);

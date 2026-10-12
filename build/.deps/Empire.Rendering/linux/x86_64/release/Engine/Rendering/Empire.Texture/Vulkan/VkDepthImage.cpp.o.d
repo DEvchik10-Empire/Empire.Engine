@@ -1,9 +1,9 @@
 {
-    depfiles_format = "gcc",
     files = {
         "Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.cpp"
     },
-    depfiles = "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.cpp.o:  Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.cpp  Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp\
+    depfiles_format = "gcc",
+    depfiles = "VkDepthImage.o: Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.cpp  Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Texture/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp\
 ",
     values = {
         "/usr/bin/g++",

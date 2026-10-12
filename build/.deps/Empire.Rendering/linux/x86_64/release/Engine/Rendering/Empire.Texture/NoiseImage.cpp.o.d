@@ -1,7 +1,4 @@
 {
-    depfiles_format = "gcc",
-    depfiles = "NoiseImage.o: Engine/Rendering/Empire.Texture/NoiseImage.cpp  Engine/Rendering/Empire.Texture/NoiseImage.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp\
-",
     values = {
         "/usr/bin/g++",
         {
@@ -15,6 +12,9 @@
             "-DNDEBUG"
         }
     },
+    depfiles_format = "gcc",
+    depfiles = "NoiseImage.o: Engine/Rendering/Empire.Texture/NoiseImage.cpp  Engine/Rendering/Empire.Texture/NoiseImage.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp\
+",
     files = {
         "Engine/Rendering/Empire.Texture/NoiseImage.cpp"
     }

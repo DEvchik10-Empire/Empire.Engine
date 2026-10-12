@@ -15,6 +15,7 @@
  *   --no-validation     без validation layers
  *   --mesh=knot|sphere|cube      встроенная модель (по умолчанию cube)
  *   --model=путь.obj             своя модель (центрируется и масштабируется сама)
+ *   --no-model                   не рисовать модель (только небо)
  *   --sky-debug=N                отладка неба: 1 - текстура формы облаков,
  *                                2 - текстура шума, 3 - плотность облаков, 4 - mip-уровень
  *   --shaders=папка              где лежат .spv (по умолчанию: см. ResolveShaderDir)
@@ -137,7 +138,7 @@ namespace
         {1.0f, 1.0f, 1.0f},
         {1.0f, 0.662745f, 0.419608f},
         {0.45f, 0.58f, 1.0f},
-        0.4f, 1.0f, 0.05f, 8.0f, 0.0f,
+        0.5f, 1.0f, 0.05f, 8.0f, 0.0f,
         6.0f, 1.2f, 0.58f, 0.6f,
         5.0f, 4.0f,
         0.45f
@@ -174,6 +175,7 @@ namespace
         std::string shaderDir;
 
         int skyDebug = 0;
+        bool drawModel = true;
     };
 
     const char* BackendName(Platform::WindowBackend backend)
@@ -204,6 +206,7 @@ namespace
             else if (std::strncmp(a, "--mesh=", 7) == 0)     options.mesh = a + 7;
             else if (std::strncmp(a, "--model=", 8) == 0)    options.modelPath = a + 8;
             else if (std::strncmp(a, "--shaders=", 10) == 0) options.shaderDir = a + 10;
+            else if (std::strcmp(a, "--no-model") == 0)      options.drawModel = false;
             else if (std::strncmp(a, "--sky-debug=", 12) == 0) options.skyDebug = std::atoi(a + 12);
             else
             {
@@ -366,15 +369,10 @@ namespace
         Vulkan::ShaderModule litPs(device, shaderDir + "/Lit.ps.spv");
 
         // ---- текстуры неба (замена NoiseTexture2D из Godot) ----
-        // cloud_shape: fbm 10 окт. (у нас 8: выше 512 px октавы уже не видны),
-        // cloud_noise: fbm 5 окт., high_clouds: клеточный шум, shooting_star: оригинал GDQuest.
-        // cloud_shape: 1024 px, 6 октав (выше октавы мельче текселя и дают
-        // «ступеньки» на краях облаков), gain 7 + bias 0.6 - контраст и покрытие
-        // неба, сдвиг (224, 720) - какой участок шума окажется над головой.
-        // Это подгонка под вид превью GDQuest.
-        const Rendering::ImageR8 shapeImage = Rendering::MakeFbmNoiseImage(1024, 5, 6, 1, 7.0f, 224, 720, 0.6f);
-        const Rendering::ImageR8 noiseImage = Rendering::MakeFbmNoiseImage(512, 5, 5, 101);
-        const Rendering::ImageR8 highImage = Rendering::MakeCellularImage(512, 6, 201);
+        // Точные картинки NoiseTexture2D из оригинала (выгружены из Godot 4.2.2).
+        const Rendering::ImageR8 shapeImage = Rendering::GetGodotCloudShapeImage();
+        const Rendering::ImageR8 noiseImage = Rendering::GetGodotCloudNoiseImage();
+        const Rendering::ImageR8 highImage = Rendering::GetGodotHighCloudsImage();
         const Rendering::ImageR8 starImage = Rendering::GetOriginalShootingStarImage();
 
         Vulkan::Texture2D cloudShapeTexture(device, shapeImage, true, true);
@@ -507,13 +505,16 @@ namespace
             uniforms.Bind(frame.commandBuffer, skyPipeline.GetLayout(), frame.frameIndex);
             vkCmdDraw(frame.commandBuffer, 3, 1, 0, 0);
 
-            // 2. Модель.
-            litPipeline.Bind(frame.commandBuffer);
-            uniforms.Bind(frame.commandBuffer, litPipeline.GetLayout(), frame.frameIndex);
-            vkCmdPushConstants(
-                frame.commandBuffer, litPipeline.GetLayout(),
-                VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPush), &push);
-            mesh.Draw(frame.commandBuffer);
+            // 2. Модель (отключается флагом --no-model).
+            if (options.drawModel)
+            {
+                litPipeline.Bind(frame.commandBuffer);
+                uniforms.Bind(frame.commandBuffer, litPipeline.GetLayout(), frame.frameIndex);
+                vkCmdPushConstants(
+                    frame.commandBuffer, litPipeline.GetLayout(),
+                    VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPush), &push);
+                mesh.Draw(frame.commandBuffer);
+            }
 
             frames.EndRenderPass(frame);
 

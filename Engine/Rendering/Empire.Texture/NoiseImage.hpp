@@ -45,8 +45,32 @@ namespace Engine
             Types::f32 bias = 0.0f
         );
 
+        /*
+         * Аналог NoiseTexture2D + FastNoiseLite из Godot с настройками по
+         * умолчанию: симплекс-шум, frequency 0.01 (в координатах пикселей),
+         * fbm, lacunarity 2, gain 0.5, seamless, normalize.
+         *   size      - сторона картинки (в Godot 512),
+         *   octaves   - 5 по умолчанию (cloud_noise), 10 у cloud_shape,
+         *   skirt     - seamless_blend_skirt: 0.3 по умолчанию, 1.0 у cloud_shape.
+         * Алгоритм симплекса не побитово тот же, что у FastNoiseLite, но
+         * статистика и вид такие же.
+         */
+        ImageR8 MakeSimplexFbmImage(
+            Types::u32 size,
+            Types::u32 octaves,
+            Types::u32 seed,
+            Types::f32 skirt,
+            Types::f32 frequency = 0.01f
+        );
+
         // Клеточный шум (расстояние до ближайшей точки), бесшовный.
         ImageR8 MakeCellularImage(Types::u32 size, Types::u32 cells, Types::u32 seed);
+
+        // Точные текстуры неба из проекта GDQuest (выгружены из Godot 4.2.2):
+        // cloud_shape, cloud_noise, high_clouds - 512x512.
+        ImageR8 GetGodotCloudShapeImage();
+        ImageR8 GetGodotCloudNoiseImage();
+        ImageR8 GetGodotHighCloudsImage();
 
         // Оригинальная текстура падающей звезды GDQuest (128x128, вшита в код).
         ImageR8 GetOriginalShootingStarImage();

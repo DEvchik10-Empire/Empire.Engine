@@ -226,6 +226,12 @@ namespace Engine
                     samplerInfo.addressModeU = mode;
                     samplerInfo.addressModeV = mode;
                     samplerInfo.addressModeW = mode;
+                    if (device.GetMaxAnisotropy() > 1.0f)
+                    {
+                        samplerInfo.anisotropyEnable = VK_TRUE;
+                        samplerInfo.maxAnisotropy = device.GetMaxAnisotropy();
+                    }
+
                     samplerInfo.minLod = 0.0f;
                     samplerInfo.maxLod = static_cast<float>(levels);
                     samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;

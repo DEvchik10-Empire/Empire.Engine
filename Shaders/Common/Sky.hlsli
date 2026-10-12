@@ -93,18 +93,23 @@ float GetShootingStar(float3 eye)
 // Облака.
 // ---------------------------------------------------------------------
 
-// cloud_curves из Godot: кривая (0,0) -> (0.1,1) -> (1,0.8).
-// Оригинал читает её в точке progress = 3..4, а текстура кривой без repeat:
-// координата зажимается к краю, поэтому на деле всегда получается значение
-// в x = 1, то есть 0.8. Здесь это сделано явно, с той же кривой.
+// cloud_curves из Godot: кривая (0,0) -> (0.1,1) -> (1,0.8) по высоте облака.
+// Оригинал читает её в точке progress = 3..4. Подгонка по превью GDQuest
+// показала: кривая идёт с повтором (progress берётся по модулю 1), тогда низ
+// облаков скругляется (0 -> 1 на первых 10%), а верх чуть сужается (до 0.8).
+// Именно это даёт округлые «пушистые» облака с плоским дном.
 float HeightCurve(float progress)
 {
-    float x = saturate(progress);
+    float x = frac(progress);
 
     return x < 0.1 ? x * 10.0 : 1.0 - (x - 0.1) / 0.9 * 0.2;
 }
 
-float CloudDensity(float3 p, float progress, float2 lods)
+// gx, gy - экранные производные точки p.xy (по x и по y экрана), уже с учётом
+// высоты и progress. С ними текстуры читаются через SampleGrad: так работает
+// анизотропная фильтрация (filter_linear_mipmap_anisotropic в Godot), и край
+// облака у горизонта остаётся чётким, а не размазывается в "плиты".
+float CloudDensity(float2 p, float progress, float2 gx, float2 gy)
 {
     float time = g_cameraPos.w;
 
@@ -114,8 +119,12 @@ float CloudDensity(float3 p, float progress, float2 lods)
     float cloudsScale = g_cloudsParams.y;
     float smoothness = g_cloudsParams.z;
 
-    float noise = g_cloudNoiseTex.SampleLevel(g_cloudNoiseSampler, p.xy * 4.0 + tOffsetSmall, lods.y).r * 0.1 + 0.9;
-    float cloudsShape = g_cloudShapeTex.SampleLevel(g_cloudShapeSampler, (p.xy + tOffset) * cloudsScale, lods.x).r;
+    float noise = g_cloudNoiseTex.SampleGrad(
+        g_cloudNoiseSampler, p * 4.0 + tOffsetSmall, gx * 4.0, gy * 4.0).r * 0.1 + 0.9;
+
+    float cloudsShape = g_cloudShapeTex.SampleGrad(
+        g_cloudShapeSampler, (p + tOffset) * cloudsScale, gx * cloudsScale, gy * cloudsScale).r;
+
     float heightCurve = HeightCurve(progress);
 
     float baseDensity = 1.0 - g_cloudsParams.x;
@@ -128,7 +137,8 @@ float CloudDensity(float3 p, float progress, float2 lods)
 }
 
 // x - плотность, y - "затенённость" (сколько облаков между точкой и солнцем).
-float2 CloudRayMarch(float3 direction, float3 sunDirection, float2 lods)
+// cloudsXY - eye.xz / eye.y (в Godot это direction.xy, direction.z = 1 не используется).
+float2 CloudRayMarch(float2 cloudsXY, float3 sunDirection, float2 cloudsDdx, float2 cloudsDdy)
 {
     float density = 0.0;
     float light = 0.0;
@@ -144,9 +154,12 @@ float2 CloudRayMarch(float3 direction, float3 sunDirection, float2 lods)
     for (int i = loopOffset; i < samples + loopOffset; i++)
     {
         float progress = float(i) / float(samples);
-        float3 samplePoint = direction * height * progress;
+        float2 samplePoint = cloudsXY * height * progress;
 
-        density += CloudDensity(samplePoint, progress, lods);
+        float2 gx = cloudsDdx * height * progress;
+        float2 gy = cloudsDdy * height * progress;
+
+        density += CloudDensity(samplePoint, progress, gx, gy);
 
         float pointLight = 0.0;
 
@@ -154,9 +167,9 @@ float2 CloudRayMarch(float3 direction, float3 sunDirection, float2 lods)
         for (int f = 0; f < shadowSamples; f++)
         {
             float shadowProgress = float(f) / float(shadowSamples);
-            float3 shadowOffset = sunDirection * height * shadowProgress;
+            float2 shadowOffset = sunDirection.xy * height * shadowProgress;
 
-            pointLight += CloudDensity(samplePoint + shadowOffset, progress, lods);
+            pointLight += CloudDensity(samplePoint + shadowOffset, progress, gx, gy);
         }
 
         light += pointLight;
@@ -226,19 +239,12 @@ float3 SkyFull(float3 eye)
     float skyY = acos(clamp(eye.y, -1.0, 1.0)) / PI;
     float bottomMask = 1.0 - smoothstep(0.45, 0.5, skyY);
 
-    // Уровень mip для облачных текстур. В Godot его выбирает железо
-    // (filter_linear_mipmap_anisotropic); внутри циклов градиентов нет,
-    // поэтому считаем один раз здесь, в единообразном потоке, по экранным
-    // производным координаты облаков (берём большую ось, как при обычной
-    // трилинейной фильтрации).
+    // Производные координаты облаков берём здесь, в единообразном потоке
+    // (внутри циклов их брать нельзя). Godot считает облака в half-res проходе,
+    // пиксель там вдвое крупнее - отсюда множитель 2.
     float2 cloudsXY = eye.xz / max(saturate(eye.y), 1e-4);
-    float footprint = max(length(ddx(cloudsXY)), length(ddy(cloudsXY)));
-    float uvPerPixel = footprint * 0.03 * 4.0; // 4 - наибольший progress
-
-    // Размеры текстур: cloud_shape 1024 px (cloud_noise 512 px читается с uv * 4).
-    float2 lods = float2(
-        max(log2(max(uvPerPixel * g_cloudsParams.y * 1024.0, 1e-6)), 0.0),
-        max(log2(max(uvPerPixel * 4.0 * 512.0, 1e-6)), 0.0));
+    float2 cloudsDdx = ddx(cloudsXY) * 2.0;
+    float2 cloudsDdy = ddy(cloudsXY) * 2.0;
 
     float3 skyColor = SkyBase(eye, true);
 
@@ -265,8 +271,7 @@ float3 SkyFull(float3 eye)
     // Основные облака (в Godot - half-res проход). Ниже горизонта их нет.
     if (eye.y > 0.0)
     {
-        float3 cloudsDirection = float3(eye.xz / saturate(eye.y), 1.0);
-        float2 clouds = CloudRayMarch(cloudsDirection, g_lightDir.xyz, lods);
+        float2 clouds = CloudRayMarch(cloudsXY, g_lightDir.xyz, cloudsDdx, cloudsDdy);
 
         // Тень облака - bottom_color, свет - clouds_light_color (как в оригинале).
         float3 cloudsColor = lerp(

@@ -37,6 +37,9 @@ namespace Engine
                     VkQueue GetQueue() const;
                     Types::u32 GetQueueFamily() const;
 
+                    // 0 - анизотропная фильтрация недоступна.
+                    Types::f32 GetMaxAnisotropy() const;
+
                     const Types::String& GetName() const;
 
                     // Ждёт, пока GPU закончит всё, что ему отправили.
@@ -57,6 +60,7 @@ namespace Engine
                     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
                     VkDevice handle = VK_NULL_HANDLE;
                     VkQueue queue = VK_NULL_HANDLE;
+                    Types::f32 maxAnisotropy = 0.0f;
 
                     Types::u32 queueFamily = 0;
                     Types::String name;

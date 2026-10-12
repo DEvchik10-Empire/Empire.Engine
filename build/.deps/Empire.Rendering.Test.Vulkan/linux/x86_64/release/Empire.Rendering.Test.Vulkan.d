@@ -1,4 +1,9 @@
 {
+    files = {
+        "build/linux/x86_64/release/libEmpire.Platform.a",
+        "build/linux/x86_64/release/libEmpire.Rendering.a",
+        "build/.objs/Empire.Rendering.Test.Vulkan/linux/x86_64/release/Tests/Rendering/TestMain.cpp.o"
+    },
     values = {
         "/usr/bin/g++",
         {
@@ -12,10 +17,5 @@
             "-lm",
             "-lxcb"
         }
-    },
-    files = {
-        "build/linux/x86_64/release/libEmpire.Platform.a",
-        "build/linux/x86_64/release/libEmpire.Rendering.a",
-        "build/.objs/Empire.Rendering.Test.Vulkan/linux/x86_64/release/Tests/Rendering/TestMain.cpp.o"
     }
 }

@@ -1,10 +1,4 @@
 {
-    values = {
-        "/usr/bin/ar",
-        {
-            "-cr"
-        }
-    },
     files = {
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Buffer/Vulkan/VkBuffer.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.cpp.o",
@@ -19,9 +13,16 @@
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Shader/Vulkan/VkShaderModule.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.SwapChain/Vulkan/VkSurface.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.SwapChain/Vulkan/VkSwapChain.cpp.o",
+        "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/GodotSkyTextures.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/NoiseImage.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/ShootingStarImage.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/Vulkan/VkDepthImage.cpp.o",
         "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Texture/Vulkan/VkTexture2D.cpp.o"
+    },
+    values = {
+        "/usr/bin/ar",
+        {
+            "-cr"
+        }
     }
 }

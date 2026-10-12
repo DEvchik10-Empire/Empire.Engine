@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "VkDevice.hpp"
 
 #include <cstring>
@@ -170,8 +171,25 @@ namespace Engine
                     VK_KHR_SWAPCHAIN_EXTENSION_NAME
                 };
 
+                // Анизотропная фильтрация нужна небу (в Godot облачные текстуры
+                // идут с filter_linear_mipmap_anisotropic). Включаем, если есть.
+                VkPhysicalDeviceFeatures supported{};
+                vkGetPhysicalDeviceFeatures(physicalDevice, &supported);
+
+                VkPhysicalDeviceProperties deviceProps{};
+                vkGetPhysicalDeviceProperties(physicalDevice, &deviceProps);
+
+                VkPhysicalDeviceFeatures enabled{};
+
+                if (supported.samplerAnisotropy)
+                {
+                    enabled.samplerAnisotropy = VK_TRUE;
+                    maxAnisotropy = std::min(16.0f, deviceProps.limits.maxSamplerAnisotropy);
+                }
+
                 VkDeviceCreateInfo info{};
                 info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+                info.pEnabledFeatures = &enabled;
                 info.queueCreateInfoCount = 1;
                 info.pQueueCreateInfos = &queueInfo;
                 info.enabledExtensionCount = 1;
@@ -192,6 +210,11 @@ namespace Engine
                     vkDestroyDevice(handle, nullptr);
                     handle = VK_NULL_HANDLE;
                 }
+            }
+
+            Types::f32 Device::GetMaxAnisotropy() const
+            {
+                return maxAnisotropy;
             }
 
             VkPhysicalDevice Device::GetPhysicalDevice() const

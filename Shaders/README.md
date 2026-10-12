@@ -42,3 +42,10 @@ astro, высокие облака, ray-march облаков с тенью к с
 - cloud_curves: в оригинале из-за clamp всегда даёт 0.8; сделано явно.
 - В HLSL `smoothstep(a, b, x)` требует a < b, поэтому `smoothstep(0.5, 0.45, y)`
   записано как `1 - smoothstep(0.45, 0.5, y)`.
+
+## Небо: что изменено в последней версии
+
+- Облака теперь строго по `stylized_sky.gdshader`: ray-march по progress 3..4, тень к луне, `cloud_curves`.
+- Текстуры читаются через `SampleGrad` + анизотропная фильтрация (как `filter_linear_mipmap_anisotropic` в Godot).
+- `cloud_shape` / `cloud_noise` / `high_clouds`: точные картинки NoiseTexture2D из оригинала (выгружены из Godot 4.2.2, `Empire.Texture/GodotSkyTextures.cpp`).
+- Плотность облаков в сцене 0.5 (в night_sky.tres 0.4): превью GDQuest по покрытию ближе к 0.5. Меняется в `SceneMain.cpp`.
