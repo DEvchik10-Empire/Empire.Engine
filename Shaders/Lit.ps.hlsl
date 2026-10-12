@@ -10,6 +10,24 @@
 #include "Common/Scene.hlsli"
 #include "Common/Sky.hlsli"
 
+// Должно совпадать с PushConstants в Lit.vs.hlsl.
+struct PushConstants
+{
+    float4 model0;
+    float4 model1;
+    float4 model2;
+    float4 model3;
+
+    float4 baseColor;
+    float4 material;
+};
+
+[[vk::push_constant]] PushConstants g_push;
+
+// Set 1: материал (текстура base color; sRGB -> линейное делает сам GPU).
+[[vk::combinedImageSampler]][[vk::binding(0, 1)]] Texture2D g_baseColorTex;
+[[vk::combinedImageSampler]][[vk::binding(0, 1)]] SamplerState g_baseColorSampler;
+
 struct PSInput
 {
     float4 position  : SV_Position;
@@ -54,14 +72,35 @@ float4 main(PSInput input) : SV_Target0
     float3 H = normalize(V + L);
 
     // ---- материал ----
-    // Цвет плавно "дышит": три синусоиды со сдвигом 120 градусов
-    // (так же менялся цвет закраски экрана в первом тесте).
-    float3 cycle = 0.5 + 0.5 * sin(time + float3(0.0, 2.0944, 4.1888));
+    float3 albedo;
+    float metallic;
+    float roughness;
 
-    float3 albedo = pow(cycle, 2.2); // sRGB -> линейное
+    if (g_push.material.x < 0.5)
+    {
+        // Куб и прочие примитивы: цвет плавно "дышит" - три синусоиды со
+        // сдвигом 120 градусов (так же менялся цвет закраски экрана в первом тесте).
+        float3 cycle = 0.5 + 0.5 * sin(time + float3(0.0, 2.0944, 4.1888));
 
-    float metallic = 0.2;
-    float roughness = 0.28;
+        albedo = pow(cycle, 2.2); // sRGB -> линейное
+        metallic = 0.2;
+        roughness = 0.28;
+    }
+    else
+    {
+        // Модель glTF: base color = текстура * множитель материала.
+        float4 baseColor = g_baseColorTex.Sample(g_baseColorSampler, input.uv) * g_push.baseColor;
+
+        // alphaMode MASK / BLEND: отсекаем прозрачное.
+        if (g_push.material.y >= 0.0 && baseColor.a < g_push.material.y)
+        {
+            discard;
+        }
+
+        albedo = baseColor.rgb;
+        metallic = saturate(g_push.material.z);
+        roughness = clamp(g_push.material.w, 0.05, 1.0);
+    }
 
     float3 f0 = lerp(float3(0.04, 0.04, 0.04), albedo, metallic);
 

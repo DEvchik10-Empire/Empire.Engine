@@ -28,6 +28,13 @@ namespace Engine
                 indexBuffer->Upload(mesh.indices.data(), indexBytes);
 
                 indexCount = static_cast<Types::u32>(mesh.indices.size());
+
+                submeshes = mesh.submeshes;
+
+                if (submeshes.empty())
+                {
+                    submeshes.push_back(SubMesh{0, indexCount, 0});
+                }
             }
 
             void GpuMesh::Draw(VkCommandBuffer commandBuffer) const
@@ -38,6 +45,25 @@ namespace Engine
                 vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex, &offset);
                 vkCmdBindIndexBuffer(commandBuffer, indexBuffer->Get(), 0, VK_INDEX_TYPE_UINT32);
                 vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+            }
+
+            void GpuMesh::Bind(VkCommandBuffer commandBuffer) const
+            {
+                const VkBuffer vertex = vertexBuffer->Get();
+                const VkDeviceSize offset = 0;
+
+                vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex, &offset);
+                vkCmdBindIndexBuffer(commandBuffer, indexBuffer->Get(), 0, VK_INDEX_TYPE_UINT32);
+            }
+
+            void GpuMesh::DrawRange(VkCommandBuffer commandBuffer, Types::u32 firstIndex, Types::u32 count) const
+            {
+                vkCmdDrawIndexed(commandBuffer, count, 1, firstIndex, 0, 0);
+            }
+
+            const std::vector<SubMesh>& GpuMesh::GetSubMeshes() const
+            {
+                return submeshes;
             }
 
             Types::u32 GpuMesh::GetIndexCount() const

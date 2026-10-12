@@ -1,4 +1,9 @@
 {
+    depfiles = "VkMesh.o: Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.cpp  Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Mesh/Mesh.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Buffer/Vulkan/VkBuffer.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp\
+",
+    files = {
+        "Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.cpp"
+    },
     values = {
         "/usr/bin/g++",
         {
@@ -12,10 +17,5 @@
             "-DNDEBUG"
         }
     },
-    depfiles_format = "gcc",
-    depfiles = "VkMesh.o: Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.cpp  Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Mesh/Mesh.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp  Engine/Rendering/Empire.Buffer/Vulkan/VkBuffer.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkCommon.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkDevice.hpp  Engine/Rendering/Empire.Buffer/Vulkan/../../Empire.Device/Vulkan/VkInstance.hpp\
-",
-    files = {
-        "Engine/Rendering/Empire.Buffer/Vulkan/VkMesh.cpp"
-    }
+    depfiles_format = "gcc"
 }

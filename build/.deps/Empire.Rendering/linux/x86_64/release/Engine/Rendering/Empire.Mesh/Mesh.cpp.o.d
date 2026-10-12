@@ -1,10 +1,10 @@
 {
-    depfiles_format = "gcc",
+    depfiles = "Mesh.o: Engine/Rendering/Empire.Mesh/Mesh.cpp  Engine/Rendering/Empire.Mesh/Mesh.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp\
+",
     files = {
         "Engine/Rendering/Empire.Mesh/Mesh.cpp"
     },
-    depfiles = "build/.objs/Empire.Rendering/linux/x86_64/release/Engine/Rendering/Empire.Mesh/Mesh.cpp.o:  Engine/Rendering/Empire.Mesh/Mesh.cpp  Engine/Rendering/Empire.Mesh/Mesh.hpp  /home/devchik10/Documents/Empire.Engine/Kernel/Types.hpp\
-",
+    depfiles_format = "gcc",
     values = {
         "/usr/bin/g++",
         {

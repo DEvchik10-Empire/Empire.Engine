@@ -23,14 +23,17 @@ namespace Engine
                 {
                     // ---- layout ----
                     VkPushConstantRange push{};
-                    push.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+                    push.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
                     push.offset = 0;
                     push.size = desc.pushConstantSize;
 
                     VkPipelineLayoutCreateInfo layoutInfo{};
                     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-                    layoutInfo.setLayoutCount = desc.setLayout != VK_NULL_HANDLE ? 1 : 0;
-                    layoutInfo.pSetLayouts = &desc.setLayout;
+                    // Set 0 - кадр (uniform + шумы неба), set 1 - материал (если задан).
+                    VkDescriptorSetLayout setLayouts[2] = {desc.setLayout, desc.materialLayout};
+                    layoutInfo.setLayoutCount =
+                        desc.setLayout == VK_NULL_HANDLE ? 0 : (desc.materialLayout != VK_NULL_HANDLE ? 2 : 1);
+                    layoutInfo.pSetLayouts = setLayouts;
                     layoutInfo.pushConstantRangeCount = desc.pushConstantSize > 0 ? 1 : 0;
                     layoutInfo.pPushConstantRanges = &push;
 

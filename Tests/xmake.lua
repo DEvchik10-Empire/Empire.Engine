@@ -55,7 +55,8 @@ target("Empire.Rendering.Test.Vulkan")
 --   xmake build Empire.Rendering.Test.Scene
 --   xmake run   Empire.Rendering.Test.Scene --time=night
 --   xmake run   Empire.Rendering.Test.Scene --cycle --mesh=sphere
---   xmake run   Empire.Rendering.Test.Scene --model=path/to/model.obj
+--   xmake run   Empire.Rendering.Test.Scene --model=path/to/model.glb
+--   xmake run   Empire.Rendering.Test.Scene --show=cube|model|none
 target("Empire.Rendering.Test.Scene")
     set_kind("binary")
 
@@ -77,6 +78,9 @@ target("Empire.Rendering.Test.Scene")
     )
 
     add_defines('EMPIRE_SHADER_DIR="' .. path.join(EngineRoot, "build", "shaders") .. '"')
+
+    -- Папка с моделями: Assets/asset.glb показывается по умолчанию.
+    add_defines('EMPIRE_ASSET_DIR="' .. path.join(EngineRoot, "Assets") .. '"')
 
     add_packages(
         "pkgconfig::vulkan",

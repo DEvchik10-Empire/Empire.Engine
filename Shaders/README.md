@@ -49,3 +49,20 @@ astro, высокие облака, ray-march облаков с тенью к с
 - Текстуры читаются через `SampleGrad` + анизотропная фильтрация (как `filter_linear_mipmap_anisotropic` в Godot).
 - `cloud_shape` / `cloud_noise` / `high_clouds`: точные картинки NoiseTexture2D из оригинала (выгружены из Godot 4.2.2, `Empire.Texture/GodotSkyTextures.cpp`).
 - Плотность облаков в сцене 0.5 (в night_sky.tres 0.4): превью GDQuest по покрытию ближе к 0.5. Меняется в `SceneMain.cpp`.
+
+## Загрузка моделей
+
+Запуск сцены (папка Empire.Engine):
+
+    xmake run Empire.Rendering.Test.Scene                 # Assets/asset.glb, если есть, иначе куб
+    xmake run Empire.Rendering.Test.Scene --show=cube     # куб (--mesh=sphere|knot - другие примитивы)
+    xmake run Empire.Rendering.Test.Scene --show=model    # Assets/asset.glb
+    xmake run Empire.Rendering.Test.Scene --show=none     # только небо
+    xmake run Empire.Rendering.Test.Scene --model=/путь/файл.glb
+    xmake run Empire.Rendering.Test.Scene --spin=y --spin-speed=-0.9   # скорость и направление вращения
+    xmake run Empire.Rendering.Test.Scene --camera=orbit  # камера облетает (по умолчанию стоит)
+
+Загрузчик glTF: Empire.Mesh/GltfLoader.cpp (картинки декодирует stb_image, ThirdParty/stb).
+Поддерживается: геометрия с иерархией узлов, base color (текстура + множитель), металл/шероховатость
+как числа, alphaMode MASK/BLEND как отсечение. Не поддерживается: анимации, скелет, карты нормалей,
+metallicRoughness/emissive текстуры, второй набор UV, сжатие Draco/meshopt, данные base64.

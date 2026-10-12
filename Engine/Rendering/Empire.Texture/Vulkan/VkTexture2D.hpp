@@ -2,6 +2,9 @@
 
 #include "../../Empire.Device/Vulkan/VkCommon.hpp"
 #include "../../Empire.Device/Vulkan/VkDevice.hpp"
+#include <vector>
+
+#include "../../Empire.Mesh/Mesh.hpp"
 #include "../NoiseImage.hpp"
 
 namespace Engine
@@ -23,6 +26,10 @@ namespace Engine
             {
                 public:
                     Texture2D(const Device& device, const ImageR8& image, Types::b8 repeat, Types::b8 mipmaps = false);
+
+                    // Цветная текстура RGBA8. srgb = true для цветов (base color):
+                    // GPU сам переводит значения в линейные при чтении в шейдере.
+                    Texture2D(const Device& device, const ImageRGBA8& image, Types::b8 srgb, Types::b8 repeat, Types::b8 mipmaps = true);
                     ~Texture2D();
 
                     Texture2D(const Texture2D&) = delete;
@@ -32,6 +39,10 @@ namespace Engine
                     VkSampler GetSampler() const;
 
                 private:
+                    void Create(
+                        Types::u32 width, Types::u32 height, Types::u32 channels, VkFormat format,
+                        const std::vector<Types::u8>& pixels, Types::b8 repeat, Types::b8 mipmaps);
+
                     void Destroy();
 
                     const Device& device;

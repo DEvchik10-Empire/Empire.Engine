@@ -5,12 +5,17 @@
 
 #include "Common/Scene.hlsli"
 
+// Должно совпадать с ModelPush в Tests/Rendering/SceneMain.cpp и с Lit.ps.hlsl.
 struct PushConstants
 {
     float4 model0;
     float4 model1;
     float4 model2;
     float4 model3;
+
+    float4 baseColor; // множитель base color (линейный), a - непрозрачность
+    float4 material;  // x: 0 - цвет "дышит" (куб), 1 - материал glTF;
+                      // y: alphaCutoff (< 0 - выключен); z: metallic; w: roughness
 };
 
 [[vk::push_constant]] PushConstants g_push;

@@ -134,6 +134,16 @@ namespace Engine
             }
         }
 
+        void NormalizeMeshToUnit(MeshData& mesh)
+        {
+            NormalizeToUnit(mesh);
+        }
+
+        void ComputeMeshSmoothNormals(MeshData& mesh)
+        {
+            ComputeSmoothNormals(mesh);
+        }
+
         MeshData MakeCube()
         {
             MeshData mesh;

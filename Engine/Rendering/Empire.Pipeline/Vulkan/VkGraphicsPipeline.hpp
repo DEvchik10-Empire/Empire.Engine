@@ -15,6 +15,9 @@ namespace Engine
                 VkRenderPass renderPass = VK_NULL_HANDLE;
                 VkDescriptorSetLayout setLayout = VK_NULL_HANDLE;
 
+                // Set 1 (материал: текстура base color). Не нужен - оставь VK_NULL_HANDLE.
+                VkDescriptorSetLayout materialLayout = VK_NULL_HANDLE;
+
                 const ShaderModule* vertexShader = nullptr;
                 const ShaderModule* fragmentShader = nullptr;
 
@@ -25,7 +28,7 @@ namespace Engine
                 Types::b8 depthTest = true;
                 Types::b8 depthWrite = true;
 
-                // Размер push constants (0 - нет). Видны в vertex-стадии.
+                // Размер push constants (0 - нет). Видны в vertex- и fragment-стадиях.
                 Types::u32 pushConstantSize = 0;
             };
 

@@ -47,28 +47,44 @@ namespace Engine
             Texture2D::Texture2D(const Device& device, const ImageR8& source, Types::b8 repeat, Types::b8 mipmaps)
                 : device(device)
             {
-                if (source.width == 0 || source.height == 0 ||
-                    source.pixels.size() != static_cast<std::size_t>(source.width) * source.height)
+                Create(source.width, source.height, 1, VK_FORMAT_R8_UNORM, source.pixels, repeat, mipmaps);
+            }
+
+            Texture2D::Texture2D(const Device& device, const ImageRGBA8& source, Types::b8 srgb, Types::b8 repeat, Types::b8 mipmaps)
+                : device(device)
+            {
+                Create(
+                    source.width, source.height, 4,
+                    srgb ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM,
+                    source.pixels, repeat, mipmaps);
+            }
+
+            void Texture2D::Create(
+                Types::u32 width, Types::u32 height, Types::u32 channels, VkFormat format,
+                const std::vector<Types::u8>& pixels, Types::b8 repeat, Types::b8 mipmaps)
+            {
+                if (width == 0 || height == 0 ||
+                    pixels.size() != static_cast<std::size_t>(width) * height * channels)
                 {
                     throw std::runtime_error("Texture2D: invalid image");
                 }
 
                 // Цепочка уровней: все подряд в одном буфере (уровень 0, 1, ...).
-                std::vector<Types::u8> data = source.pixels;
+                std::vector<Types::u8> data = pixels;
                 std::vector<VkBufferImageCopy> regions;
 
                 {
                     VkBufferImageCopy region{};
                     region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                     region.imageSubresource.layerCount = 1;
-                    region.imageExtent = {source.width, source.height, 1};
+                    region.imageExtent = {width, height, 1};
                     regions.push_back(region);
                 }
 
                 if (mipmaps)
                 {
-                    Types::u32 w = source.width;
-                    Types::u32 h = source.height;
+                    Types::u32 w = width;
+                    Types::u32 h = height;
                     std::size_t previousOffset = 0;
 
                     while (w > 1 || h > 1)
@@ -77,7 +93,7 @@ namespace Engine
                         const Types::u32 nh = std::max(1u, h / 2);
                         const std::size_t offset = data.size();
 
-                        data.resize(offset + static_cast<std::size_t>(nw) * nh);
+                        data.resize(offset + static_cast<std::size_t>(nw) * nh * channels);
 
                         for (Types::u32 y = 0; y < nh; ++y)
                         {
@@ -88,14 +104,18 @@ namespace Engine
                                 const Types::u32 y0 = std::min(y * 2, h - 1);
                                 const Types::u32 y1 = std::min(y * 2 + 1, h - 1);
 
-                                const Types::u32 sum =
-                                    data[previousOffset + static_cast<std::size_t>(y0) * w + x0] +
-                                    data[previousOffset + static_cast<std::size_t>(y0) * w + x1] +
-                                    data[previousOffset + static_cast<std::size_t>(y1) * w + x0] +
-                                    data[previousOffset + static_cast<std::size_t>(y1) * w + x1];
+                                for (Types::u32 c = 0; c < channels; ++c)
+                                {
+                                    const auto at = [&](Types::u32 px, Types::u32 py) -> Types::u32
+                                    {
+                                        return data[previousOffset + (static_cast<std::size_t>(py) * w + px) * channels + c];
+                                    };
 
-                                data[offset + static_cast<std::size_t>(y) * nw + x] =
-                                    static_cast<Types::u8>((sum + 2) / 4);
+                                    const Types::u32 sum = at(x0, y0) + at(x1, y0) + at(x0, y1) + at(x1, y1);
+
+                                    data[offset + (static_cast<std::size_t>(y) * nw + x) * channels + c] =
+                                        static_cast<Types::u8>((sum + 2) / 4);
+                                }
                             }
                         }
 
@@ -123,8 +143,8 @@ namespace Engine
                     VkImageCreateInfo info{};
                     info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
                     info.imageType = VK_IMAGE_TYPE_2D;
-                    info.format = VK_FORMAT_R8_UNORM;
-                    info.extent = {source.width, source.height, 1};
+                    info.format = format;
+                    info.extent = {width, height, 1};
                     info.mipLevels = levels;
                     info.arrayLayers = 1;
                     info.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -208,7 +228,7 @@ namespace Engine
                     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
                     viewInfo.image = image;
                     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-                    viewInfo.format = VK_FORMAT_R8_UNORM;
+                    viewInfo.format = format;
                     viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                     viewInfo.subresourceRange.levelCount = levels;
                     viewInfo.subresourceRange.layerCount = 1;

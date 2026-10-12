@@ -13,9 +13,14 @@
  * Опции:
  *   --frames=N          после N кадров выйти (0 - работать до закрытия окна)
  *   --no-validation     без validation layers
- *   --mesh=knot|sphere|cube      встроенная модель (по умолчанию cube)
- *   --model=путь.obj             своя модель (центрируется и масштабируется сама)
- *   --no-model                   не рисовать модель (только небо)
+ *   --show=auto|cube|model|none  что показывать: куб, свою модель или ничего (только небо).
+ *                                auto (по умолчанию): модель Assets/asset.glb, если она есть, иначе куб
+ *   --model=путь.glb|.gltf|.obj  своя модель (центрируется и масштабируется сама; включает --show=model)
+ *   --mesh=cube|sphere|knot      какой встроенный примитив показывать (для --show=cube)
+ *   --spin=y|xy|none             как крутить (по умолчанию: y для glb/obj, xy для встроенных примитивов)
+ *   --spin-speed=N               скорость, рад/с, со знаком (по умолчанию 0.9; минус - в другую сторону)
+ *   --camera=fixed|orbit         камера: стоит на месте (по умолчанию) или медленно облетает
+ *   --no-model                   то же, что --show=none
  *   --sky-debug=N                отладка неба: 1 - текстура формы облаков,
  *                                2 - текстура шума, 3 - плотность облаков, 4 - mip-уровень
  *   --shaders=папка              где лежат .spv (по умолчанию: см. ResolveShaderDir)
@@ -25,6 +30,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <cctype>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -32,6 +38,10 @@
 #include <memory>
 #include <string>
 #include <thread>
+
+#ifndef EMPIRE_ASSET_DIR
+#define EMPIRE_ASSET_DIR "Assets"
+#endif
 
 #include "Empire.Window/IWindowImpl.hpp"
 #include "Empire.Window/WindowBackend.hpp"
@@ -46,6 +56,7 @@
 #include "Empire.Buffer/Vulkan/VkMesh.hpp"
 #include "Empire.Shader/Vulkan/VkShaderModule.hpp"
 #include "Empire.Pipeline/Vulkan/VkSceneTarget.hpp"
+#include "Empire.Pipeline/Vulkan/VkMaterialSet.hpp"
 #include "Empire.Pipeline/Vulkan/VkUniformSet.hpp"
 #include "Empire.Pipeline/Vulkan/VkGraphicsPipeline.hpp"
 #include "Empire.Mesh/Mesh.hpp"
@@ -176,6 +187,11 @@ namespace
 
         int skyDebug = 0;
         bool drawModel = true;
+        std::string spin;
+        std::string show = "auto";
+        std::string camera = "fixed";
+        bool meshGiven = false;
+        float spinSpeed = 0.9f;
     };
 
     const char* BackendName(Platform::WindowBackend backend)
@@ -203,10 +219,14 @@ namespace
             else if (std::strcmp(a, "auto") == 0)            options.backend = Platform::WindowBackend::Auto;
             else if (std::strcmp(a, "--no-validation") == 0) options.validation = false;
             else if (std::strncmp(a, "--frames=", 9) == 0)   options.maxFrames = static_cast<unsigned int>(std::strtoul(a + 9, nullptr, 10));
-            else if (std::strncmp(a, "--mesh=", 7) == 0)     options.mesh = a + 7;
+            else if (std::strncmp(a, "--mesh=", 7) == 0)     { options.mesh = a + 7; options.meshGiven = true; }
+            else if (std::strncmp(a, "--show=", 7) == 0)     options.show = a + 7;
+            else if (std::strncmp(a, "--camera=", 9) == 0)   options.camera = a + 9;
+            else if (std::strncmp(a, "--spin-speed=", 13) == 0) options.spinSpeed = static_cast<float>(std::atof(a + 13));
             else if (std::strncmp(a, "--model=", 8) == 0)    options.modelPath = a + 8;
             else if (std::strncmp(a, "--shaders=", 10) == 0) options.shaderDir = a + 10;
-            else if (std::strcmp(a, "--no-model") == 0)      options.drawModel = false;
+            else if (std::strncmp(a, "--spin=", 7) == 0)     options.spin = a + 7;
+            else if (std::strcmp(a, "--no-model") == 0)      { options.drawModel = false; options.show = "none"; }
             else if (std::strncmp(a, "--sky-debug=", 12) == 0) options.skyDebug = std::atoi(a + 12);
             else
             {
@@ -254,7 +274,22 @@ namespace
         {
             Rendering::MeshData mesh;
 
-            if (!Rendering::LoadObj(options.modelPath.c_str(), mesh))
+            const std::string& path = options.modelPath;
+            const auto endsWith = [&](const char* ext)
+            {
+                const std::size_t n = std::strlen(ext);
+                if (path.size() < n) return false;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    if (std::tolower(static_cast<unsigned char>(path[path.size() - n + i])) != ext[i]) return false;
+                }
+                return true;
+            };
+
+            const bool isGltf = endsWith(".glb") || endsWith(".gltf");
+
+            if (!(isGltf ? Rendering::LoadGltf(path.c_str(), mesh)
+                         : Rendering::LoadObj(path.c_str(), mesh)))
             {
                 throw std::runtime_error("Cannot load model: " + options.modelPath);
             }
@@ -331,10 +366,15 @@ namespace
         return data;
     }
 
+    // Должно совпадать с PushConstants в Shaders/Lit.vs.hlsl и Lit.ps.hlsl.
     struct ModelPush
     {
         float model[16];
+        float baseColor[4]; // множитель base color (линейный), a - непрозрачность
+        float material[4];  // x: 0 - цвет "дышит", 1 - материал glTF; y: alphaCutoff (<0 - выкл); z: metallic; w: roughness
     };
+
+    static_assert(sizeof(ModelPush) == 96, "ModelPush must match the shader push constants");
 
     void RunRendering(Platform::IWindowImpl& window, const Options& options)
     {
@@ -384,6 +424,43 @@ namespace
             device, sizeof(SceneUniformData), Vulkan::FrameContext::FramesInFlight,
             {&cloudShapeTexture, &cloudNoiseTexture, &highCloudsTexture, &shootingStarTexture});
 
+        // ---- модель и материалы ----
+        Rendering::MeshData meshData = BuildMesh(options);
+
+        const std::vector<Rendering::MaterialData> materials = meshData.materials;
+
+        std::vector<std::unique_ptr<Vulkan::Texture2D>> imageTextures;
+
+        for (const Rendering::ImageRGBA8& image : meshData.images)
+        {
+            imageTextures.push_back(std::make_unique<Vulkan::Texture2D>(device, image, true, true, true));
+        }
+
+        // Белая текстура 1x1 для материалов без картинки (и для примитивов).
+        Rendering::ImageRGBA8 whiteImage;
+        whiteImage.width = 1;
+        whiteImage.height = 1;
+        whiteImage.pixels = {255, 255, 255, 255};
+        Vulkan::Texture2D whiteTexture(device, whiteImage, true, true, false);
+
+        std::vector<const Vulkan::Texture2D*> materialTextures;
+
+        for (const Rendering::MaterialData& material : materials)
+        {
+            materialTextures.push_back(
+                material.baseColorImage >= 0 &&
+                material.baseColorImage < static_cast<int>(imageTextures.size())
+                    ? imageTextures[material.baseColorImage].get()
+                    : &whiteTexture);
+        }
+
+        if (materialTextures.empty())
+        {
+            materialTextures.push_back(&whiteTexture);
+        }
+
+        Vulkan::MaterialSet materialSet(device, materialTextures);
+
         Vulkan::GraphicsPipelineDesc skyDesc;
         skyDesc.renderPass = target.GetRenderPass();
         skyDesc.setLayout = uniforms.GetLayout();
@@ -396,6 +473,7 @@ namespace
         Vulkan::GraphicsPipelineDesc litDesc;
         litDesc.renderPass = target.GetRenderPass();
         litDesc.setLayout = uniforms.GetLayout();
+        litDesc.materialLayout = materialSet.GetLayout();
         litDesc.vertexShader = &litVs;
         litDesc.fragmentShader = &litPs;
         litDesc.useVertexBuffer = true;
@@ -406,8 +484,7 @@ namespace
         Vulkan::GraphicsPipeline skyPipeline(device, skyDesc);
         Vulkan::GraphicsPipeline litPipeline(device, litDesc);
 
-        // ---- модель ----
-        Vulkan::GpuMesh mesh(device, BuildMesh(options));
+        Vulkan::GpuMesh mesh(device, std::move(meshData));
 
         const bool encodeGamma = swapChain.GetFormat() != VK_FORMAT_B8G8R8A8_SRGB &&
                                  swapChain.GetFormat() != VK_FORMAT_R8G8B8A8_SRGB;
@@ -475,11 +552,13 @@ namespace
             const float seconds =
                 std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count();
 
-            // Камера медленно облетает модель, слегка качаясь по высоте.
-            const float orbit = seconds * 0.12f;
+            // Камера: стоит на месте или (--camera=orbit) медленно облетает модель, слегка качаясь по высоте.
+            // --camera=fixed: стоит на месте (камера на +Z, смотрит на модель).
+            const bool orbiting = options.camera == "orbit";
+            const float orbit = orbiting ? seconds * 0.12f : 0.0f;
             const Vec3 eye{
                 std::sin(orbit) * 3.2f,
-                0.10f + std::sin(seconds * 0.3f) * 0.15f,
+                0.10f + (orbiting ? std::sin(seconds * 0.3f) * 0.15f : 0.05f),
                 std::cos(orbit) * 3.2f};
             // Смотрим чуть выше модели: больше неба, горизонт ниже центра кадра.
             const Vec3 look{0.0f, 1.1f, 0.0f};
@@ -492,9 +571,20 @@ namespace
 
             uniforms.Update(frame.frameIndex, &data, sizeof(data));
 
-            ModelPush push;
-            const Mat4 model = Multiply(RotationY(seconds * 0.9f), RotationX(seconds * 0.6f));
-            std::memcpy(push.model, model.m, sizeof(push.model));
+            const bool isGltfModel = !materials.empty();
+
+            const std::string spin =
+                !options.spin.empty() ? options.spin : (options.modelPath.empty() ? "xy" : "y");
+
+            // Поворот вокруг вертикальной оси при камере на +Z: ближняя к камере
+            // сторона идёт справа налево при отрицательном угле, поэтому для
+            // модели по умолчанию угол отрицательный (--spin-speed=-0.9 развернёт).
+            const float angle = seconds * options.spinSpeed * (options.modelPath.empty() ? 1.0f : -1.0f);
+
+            Mat4 model = RotationY(0.0f);
+
+            if (spin == "y")       model = RotationY(angle);
+            else if (spin == "xy") model = Multiply(RotationY(angle), RotationX(seconds * 0.6f));
 
             frames.BeginRenderPass(
                 frame, target.GetRenderPass(), target.GetFramebuffer(frame.imageIndex),
@@ -505,15 +595,49 @@ namespace
             uniforms.Bind(frame.commandBuffer, skyPipeline.GetLayout(), frame.frameIndex);
             vkCmdDraw(frame.commandBuffer, 3, 1, 0, 0);
 
-            // 2. Модель (отключается флагом --no-model).
+            // 2. Модель (--show=none отключает): по куску на материал.
             if (options.drawModel)
             {
                 litPipeline.Bind(frame.commandBuffer);
                 uniforms.Bind(frame.commandBuffer, litPipeline.GetLayout(), frame.frameIndex);
-                vkCmdPushConstants(
-                    frame.commandBuffer, litPipeline.GetLayout(),
-                    VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPush), &push);
-                mesh.Draw(frame.commandBuffer);
+                mesh.Bind(frame.commandBuffer);
+
+                for (const Rendering::SubMesh& sub : mesh.GetSubMeshes())
+                {
+                    ModelPush push{};
+                    std::memcpy(push.model, model.m, sizeof(push.model));
+
+                    push.baseColor[0] = push.baseColor[1] = push.baseColor[2] = push.baseColor[3] = 1.0f;
+
+                    if (isGltfModel && sub.material < materials.size())
+                    {
+                        const Rendering::MaterialData& m = materials[sub.material];
+
+                        std::memcpy(push.baseColor, m.baseColorFactor, sizeof(push.baseColor));
+                        push.material[0] = 1.0f;
+                        push.material[1] = m.alphaCutoff;
+                        push.material[2] = m.metallic;
+                        push.material[3] = m.roughness;
+                    }
+                    else
+                    {
+                        push.material[0] = 0.0f;
+                        push.material[1] = -1.0f;
+                        push.material[2] = 0.2f;
+                        push.material[3] = 0.28f;
+                    }
+
+                    materialSet.Bind(
+                        frame.commandBuffer, litPipeline.GetLayout(),
+                        isGltfModel ? sub.material : 0);
+
+                    vkCmdPushConstants(
+                        frame.commandBuffer, litPipeline.GetLayout(),
+                        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                        0, sizeof(ModelPush), &push);
+
+                    mesh.DrawRange(frame.commandBuffer, sub.firstIndex, sub.indexCount);
+                }
             }
 
             frames.EndRenderPass(frame);
@@ -549,7 +673,54 @@ namespace
 
 int main(int argc, char** argv)
 {
-    const Options options = ParseOptions(argc, argv);
+    Options options = ParseOptions(argc, argv);
+
+    // Что показывать: --show=cube|model|none; auto - своя модель, если указана
+    // через --model или лежит в Assets/asset.glb, иначе встроенный примитив.
+    {
+        const std::string defaultAsset = std::string(EMPIRE_ASSET_DIR) + "/asset.glb";
+
+        if (options.show == "auto")
+        {
+            if (!options.modelPath.empty())     options.show = "model";
+            else if (options.meshGiven)         options.show = "cube";
+            else if (FileExists(defaultAsset))  options.show = "model";
+            else                                options.show = "cube";
+        }
+
+        if (options.show == "model")
+        {
+            if (options.modelPath.empty())
+            {
+                options.modelPath = defaultAsset;
+            }
+
+            if (!FileExists(options.modelPath))
+            {
+                std::cerr << "[Scene] Model not found: " << options.modelPath
+                          << "\n        Put it there or pass --model=path/to/file.glb "
+                          << "(or use --show=cube / --show=none).\n";
+                return 1;
+            }
+        }
+        else if (options.show == "cube")
+        {
+            options.modelPath.clear();
+        }
+        else if (options.show == "none")
+        {
+            options.drawModel = false;
+            options.modelPath.clear();
+        }
+        else
+        {
+            std::cerr << "[Scene] Unknown --show=" << options.show << " (use auto|cube|model|none)\n";
+            return 1;
+        }
+
+        std::cout << "[Scene] Show: " << options.show
+                  << (options.show == "model" ? " (" + options.modelPath + ")" : std::string()) << "\n";
+    }
 
     std::cout << "=== Empire.Rendering scene test (sky + 3D model), window backend: "
               << BackendName(options.backend) << " ===\n";
