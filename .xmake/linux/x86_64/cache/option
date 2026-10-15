@@ -1,44 +1,44 @@
 {
     vulkan = {
-        __sourceinfo_showmenu = { },
-        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
-        default = true,
         showmenu = true,
-        __sourceinfo_default = { }
-    },
-    tools = {
         __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
-        __sourceinfo_showmenu = { },
-        __sourceinfo_description = {
-            ["Собирать Empire.Tools"] = {
-                file = "./xmake.lua",
-                line = 29
-            }
-        },
         __sourceinfo_default = { },
         default = true,
-        showmenu = true,
-        description = "Собирать Empire.Tools"
+        __sourceinfo_showmenu = { }
     },
     editor = {
+        showmenu = true,
+        default = true,
         __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
         __sourceinfo_showmenu = { },
         __sourceinfo_description = {
             ["Собирать Empire.Editor"] = {
-                file = "./xmake.lua",
-                line = 28
+                line = 28,
+                file = "./xmake.lua"
             }
         },
         __sourceinfo_default = { },
-        default = true,
-        showmenu = true,
         description = "Собирать Empire.Editor"
     },
-    opengl = {
-        __sourceinfo_showmenu = { },
-        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
-        default = true,
+    tools = {
         showmenu = true,
-        __sourceinfo_default = { }
+        default = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Собирать Empire.Tools"] = {
+                line = 29,
+                file = "./xmake.lua"
+            }
+        },
+        __sourceinfo_default = { },
+        description = "Собирать Empire.Tools"
+    },
+    opengl = {
+        showmenu = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_default = { },
+        default = true,
+        __sourceinfo_showmenu = { }
     }
 }

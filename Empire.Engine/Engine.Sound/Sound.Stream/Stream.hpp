@@ -1,6 +1,23 @@
 #pragma once
-#include <Empire.Engine/Engine.Sound/Sound.hpp>
+#include "Empire.Engine/Engine.Sound/Sound.Stream/Stream.hpp"
 
-namespace Empire::Engine::Sound::Stream
+// Empire.Game.Engine/Empire.Engine/Engine.Sound/Sound.Stream
+namespace DEvchik10Empire
 {
+    namespace EmpireGameEngine
+    {
+        namespace EmpireEngine
+        {
+            namespace EngineSound
+            {
+                namespace SoundStream
+                {
+                    class Stream
+                    {
+
+                    };
+                }
+            }
+        }
+    }
 }
