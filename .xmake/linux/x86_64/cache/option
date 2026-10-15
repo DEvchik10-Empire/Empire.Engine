@@ -1,0 +1,44 @@
+{
+    vulkan = {
+        showmenu = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_default = { },
+        default = true,
+        __sourceinfo_showmenu = { }
+    },
+    editor = {
+        showmenu = true,
+        default = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Собирать Empire.Editor"] = {
+                line = 28,
+                file = "./xmake.lua"
+            }
+        },
+        __sourceinfo_default = { },
+        description = "Собирать Empire.Editor"
+    },
+    tools = {
+        showmenu = true,
+        default = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Собирать Empire.Tools"] = {
+                line = 29,
+                file = "./xmake.lua"
+            }
+        },
+        __sourceinfo_default = { },
+        description = "Собирать Empire.Tools"
+    },
+    opengl = {
+        showmenu = true,
+        __scriptdir = "/home/devchik10/Documents/Empire.Game.Engine",
+        __sourceinfo_default = { },
+        default = true,
+        __sourceinfo_showmenu = { }
+    }
+}
