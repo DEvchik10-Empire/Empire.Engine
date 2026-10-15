@@ -1,0 +1,42 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Bitstream/Bitstream.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Debug/Debug.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Lobby/Lobby.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Message/Message.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Prediction/Prediction.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Replication/Replication.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Session/Session.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Snapshot/Snapshot.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Networking/Engine.Networking/linux/x86_64/release/Empire.Engine/Engine.Networking/Networking.Transport/Transport.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Platform",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lEngine.ECS",
+            "-lKernel.Reflection",
+            "-lEngine.Jobs",
+            "-lPlatform.Threading",
+            "-lPlatform.Network",
+            "-lKernel.Events",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

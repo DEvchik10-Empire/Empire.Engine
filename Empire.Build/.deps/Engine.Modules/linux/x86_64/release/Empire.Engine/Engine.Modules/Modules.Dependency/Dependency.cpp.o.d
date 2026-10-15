@@ -1,0 +1,22 @@
+{
+    files = {
+        "Empire.Engine/Engine.Modules/Modules.Dependency/Dependency.cpp"
+    },
+    depfiles_format = "gcc",
+    values = {
+        "/usr/bin/g++",
+        {
+            "-m64",
+            "-fPIC",
+            "-Wall",
+            "-Werror",
+            "-O3",
+            "-std=c++26",
+            "-I/home/devchik10/Documents/Empire.Game.Engine",
+            "-DENGINE_MODULES_EXPORT",
+            "-DNDEBUG"
+        }
+    },
+    depfiles = "Dependency.o:  Empire.Engine/Engine.Modules/Modules.Dependency/Dependency.cpp  /home/devchik10/Documents/Empire.Game.Engine/Empire.Engine/Engine.Modules/Modules.Dependency/Dependency.hpp  /home/devchik10/Documents/Empire.Game.Engine/Empire.Engine/Engine.Modules/Modules.hpp\
+"
+}

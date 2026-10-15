@@ -1,0 +1,29 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Tools.Profiler/Tools.Profiler/linux/x86_64/release/Empire.Tools/Tools.Profiler/Main.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-m64",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Platform",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-s",
+            "-lEngine.Diagnostics",
+            "-lPlatform.Process",
+            "-lPlatform.Time",
+            "-lKernel.Logging",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

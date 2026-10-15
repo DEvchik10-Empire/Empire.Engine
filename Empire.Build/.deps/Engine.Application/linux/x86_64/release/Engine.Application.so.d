@@ -1,0 +1,38 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Application/Engine.Application/linux/x86_64/release/Empire.Engine/Engine.Application/Application.CommandLine/CommandLine.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Application/Engine.Application/linux/x86_64/release/Empire.Engine/Engine.Application/Application.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Application/Engine.Application/linux/x86_64/release/Empire.Engine/Engine.Application/Application.Entry/Entry.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Application/Engine.Application/linux/x86_64/release/Empire.Engine/Engine.Application/Application.Lifecycle/Lifecycle.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Platform",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lEngine.Modules",
+            "-lEngine.GameLoop",
+            "-lPlatform.Time",
+            "-lKernel.Events",
+            "-lPlatform.App",
+            "-lKernel.Services",
+            "-lKernel.Config",
+            "-lKernel.Logging",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

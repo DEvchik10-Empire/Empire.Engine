@@ -1,0 +1,39 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Cache/Cache.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Database/Database.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Handle/Handle.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.HotReload/HotReload.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Importer/Importer.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Loader/Loader.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Package/Package.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Assets/Engine.Assets/linux/x86_64/release/Empire.Engine/Engine.Assets/Assets.Stream/Stream.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Platform",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lPlatform.FileSystem",
+            "-lEngine.Jobs",
+            "-lPlatform.Threading",
+            "-lKernel.Reflection",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

@@ -1,0 +1,51 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Blend/Blend.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Clip/Clip.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Curve/Curve.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Graph/Graph.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.IK/IK.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Morph/Morph.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Pose/Pose.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Retarget/Retarget.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Skeleton/Skeleton.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Animation/Engine.Animation/linux/x86_64/release/Empire.Engine/Engine.Animation/Animation.Skinning/Skinning.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Platform",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Math",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lEngine.Node",
+            "-lEngine.ECS",
+            "-lKernel.Events",
+            "-lEngine.Assets",
+            "-lPlatform.FileSystem",
+            "-lEngine.Jobs",
+            "-lPlatform.Threading",
+            "-lKernel.Reflection",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lMath.Transform",
+            "-lMath.Quaternion",
+            "-lMath.Matrix",
+            "-lMath.Vector",
+            "-lMath.Simd",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

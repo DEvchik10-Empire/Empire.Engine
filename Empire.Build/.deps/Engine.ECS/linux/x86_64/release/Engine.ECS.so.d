@@ -1,0 +1,33 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.Archetype/Archetype.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.Component/Component.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.Entity/Entity.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.Query/Query.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.Schedule/Schedule.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.ECS/Engine.ECS/linux/x86_64/release/Empire.Engine/Engine.ECS/ECS.System/System.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lKernel.Reflection",
+            "-lKernel.Events",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}

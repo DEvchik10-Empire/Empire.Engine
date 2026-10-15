@@ -1,0 +1,39 @@
+{
+    files = {
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Node/Engine.Node/linux/x86_64/release/Empire.Engine/Engine.Node/Node.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Node/Engine.Node/linux/x86_64/release/Empire.Engine/Engine.Node/Node.Hierarchy/Hierarchy.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Node/Engine.Node/linux/x86_64/release/Empire.Engine/Engine.Node/Node.Prefab/Prefab.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Node/Engine.Node/linux/x86_64/release/Empire.Engine/Engine.Node/Node.Scene/Scene.cpp.o",
+        "/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/.Obj/Engine.Node/Engine.Node/linux/x86_64/release/Empire.Engine/Engine.Node/Node.Serialization/Serialization.cpp.o"
+    },
+    values = {
+        "/usr/bin/g++",
+        {
+            "-shared",
+            "-m64",
+            "-fPIC",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Engine",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Math",
+            "-L/home/devchik10/Documents/Empire.Game.Engine/Empire.Build/Build.Linux.Release/Kernel",
+            "-Wl,-rpath=$ORIGIN/../Kernel",
+            "-Wl,-rpath=$ORIGIN/../Math",
+            "-Wl,-rpath=$ORIGIN/../Platform",
+            "-Wl,-rpath=$ORIGIN/../Graphics",
+            "-Wl,-rpath=$ORIGIN/../Engine",
+            "-Wl,-rpath=$ORIGIN",
+            "-s",
+            "-lEngine.ECS",
+            "-lKernel.Reflection",
+            "-lKernel.Events",
+            "-lKernel.Containers",
+            "-lKernel.Memory",
+            "-lMath.Transform",
+            "-lMath.Quaternion",
+            "-lMath.Matrix",
+            "-lMath.Vector",
+            "-lMath.Simd",
+            "-lKernel.Assert",
+            "-lKernel.Types"
+        }
+    }
+}
