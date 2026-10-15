@@ -1201,3 +1201,250 @@ Editor
 ├── Console
 ├── Gizmos
 └── Profiler
+
+ну для обычных людей будет каждый раз при открытии просить купить и тд а пофакту те 30 дней для обычных людей бесконечнвми будут..... причем прикол движка в том что в будущем и 2д полноценно будет и 3д полноценно будет но круче чем у анрила ибо работать бдует не так что все за раз намешано и ламается а отдельное... и для фильмов будет и ваще будет даже штука в которой анимации полноценные можно будет делать и так чтобы удобно... а про полноценного 3д там в том плане что и аналог люмена потом будет но выключен по дефолту и ток в форварде например включается и тд и еще будет режим графики старющий чтобы игры будто из 2000х почти или подобное чтоыб короче можно было по графе и тд делать игры как кс1.6.... и ещей воксельный рендеринг чтобы игры типа маинкрафта можно было делать..... 
+
+
+
+итоги вот Empire/
+├── xmake.lua
+│
+├── Empire.Kernel/                      ← не знает ни про ОС, ни про движок
+│   ├── Kernel.Types/
+│   ├── Kernel.Assert/
+│   ├── Kernel.Memory/                  (Allocator, Arena, Pool, Stack)
+│   ├── Kernel.Containers/              (Array, Map, Span, String, RingBuffer)
+│   ├── Kernel.Logging/                 (вывод через sink-колбэки)
+│   ├── Kernel.Reflection/              (TypeInfo, Attributes, Serialization)
+│   ├── Kernel.Events/                  (Delegate, Signal, EventBus)
+│   ├── Kernel.Config/                  (ini/json, переменные)
+│   └── Kernel.Services/                (ServiceLocator / DI)
+│
+├── Empire.Math/
+│   ├── Math.Vector/
+│   ├── Math.Matrix/
+│   ├── Math.Quaternion/
+│   ├── Math.Transform/
+│   ├── Math.Geometry/                  (AABB, Ray, Plane, Frustum, Sphere)
+│   ├── Math.Color/
+│   ├── Math.Random/
+│   └── Math.Simd/                      [SIMD]
+│
+├── Empire.Platform/                    ← один публичный API, наружу ничего больше
+│   ├── Platform.Time/                  [OS]
+│   ├── Platform.Threading/             [OS]
+│   ├── Platform.FileSystem/            [OS]
+│   ├── Platform.Process/               [OS]
+│   ├── Platform.Library/               [OS]
+│   ├── Platform.Environment/           [OS]
+│   ├── Platform.Network/               [OS]
+│   ├── Platform.App/                   [WIN]  (connection, без app.cpp)
+│   ├── Platform.Window/                [WIN]
+│   ├── Platform.Monitor/               [WIN]
+│   ├── Platform.Cursor/                [WIN]
+│   ├── Platform.Input/                 [WIN]
+│   ├── Platform.Clipboard/             [WIN]
+│   ├── Platform.Dialog/                [WIN]
+│   ├── Platform.Surface/               [WIN]  (нативный хендл для Graphics)
+│   ├── Platform.Audio/                 (WASAPI, PipeWire, ALSA, CoreAudio)
+│   └── Platform.ThirdParty/            (wayland-протоколы, xkbcommon, общие хедеры)
+│
+├── Empire.Graphics/                    ← API-слой над GPU, модель Vulkan/DX12/Metal
+│   ├── Graphics.Common/                (валидация, state tracking, эмуляция для DX11/GL)
+│   ├── Graphics.Instance/              [GPU]
+│   ├── Graphics.Adapter/               [GPU]
+│   ├── Graphics.Device/                [GPU]
+│   ├── Graphics.Queue/                 [GPU]
+│   ├── Graphics.SwapChain/             [GPU]
+│   ├── Graphics.Buffer/                [GPU]
+│   ├── Graphics.Texture/               [GPU]
+│   ├── Graphics.Sampler/               [GPU]
+│   ├── Graphics.Shader/                [GPU]
+│   ├── Graphics.Pipeline/              [GPU]
+│   ├── Graphics.BindGroup/             [GPU]
+│   ├── Graphics.RenderPass/            [GPU]
+│   ├── Graphics.CommandBuffer/         [GPU]
+│   ├── Graphics.Fence/                 [GPU]
+│   ├── Graphics.Semaphore/             [GPU]
+│   ├── Graphics.Query/                 [GPU]
+│   └── Graphics.ThirdParty/            (vulkan-headers, VMA, d3d12ma)
+│
+├── Empire.Engine/
+│   │
+│   ├── Engine.Application/
+│   │   ├── Application.Entry/
+│   │   ├── Application.Lifecycle/
+│   │   └── Application.CommandLine/
+│   │
+│   ├── Engine.GameLoop/
+│   │   ├── GameLoop.Clock/
+│   │   ├── GameLoop.FixedStep/
+│   │   └── GameLoop.Scheduler/
+│   │
+│   ├── Engine.Modules/
+│   │   ├── Modules.Subsystem/          (ISubsystem)
+│   │   ├── Modules.Registry/
+│   │   ├── Modules.Descriptor/
+│   │   └── Modules.Dependency/
+│   │
+│   ├── Engine.Jobs/                    (JobSystem, Fiber, поверх Platform.Threading)
+│   ├── Engine.Diagnostics/             (Profiler, Crash, Telemetry)
+│   │
+│   ├── Engine.Input/
+│   │   ├── Input.Action/
+│   │   ├── Input.Context/
+│   │   └── Input.Binding/
+│   │
+│   ├── Engine.Assets/
+│   │   ├── Assets.Handle/
+│   │   ├── Assets.Database/
+│   │   ├── Assets.Package/
+│   │   ├── Assets.Loader/
+│   │   ├── Assets.Importer/
+│   │   ├── Assets.Cache/
+│   │   ├── Assets.Stream/
+│   │   └── Assets.HotReload/
+│   │
+│   ├── Engine.ECS/
+│   │   ├── ECS.Entity/
+│   │   ├── ECS.Component/
+│   │   ├── ECS.Archetype/
+│   │   ├── ECS.Query/
+│   │   ├── ECS.System/
+│   │   └── ECS.Schedule/
+│   │
+│   ├── Engine.Node/
+│   │   ├── Node.Hierarchy/             (Transform, Parent, Children)
+│   │   ├── Node.Scene/
+│   │   ├── Node.Prefab/
+│   │   └── Node.Serialization/
+│   │
+│   ├── Engine.Gameplay/                ← аналог GAS
+│   │   ├── Gameplay.Tag/
+│   │   ├── Gameplay.Attribute/
+│   │   ├── Gameplay.Effect/
+│   │   ├── Gameplay.Ability/
+│   │   └── Gameplay.Cue/
+│   │
+│   ├── Engine.Rendering/
+│   │   ├── Rendering.Resource/
+│   │   ├── Rendering.Frame/
+│   │   ├── Rendering.Shader/
+│   │   ├── Rendering.Graph/
+│   │   ├── Rendering.Mesh/
+│   │   ├── Rendering.Image/
+│   │   ├── Rendering.Material/
+│   │   ├── Rendering.Technique/
+│   │   ├── Rendering.View/
+│   │   ├── Rendering.Light/
+│   │   ├── Rendering.Shadow/
+│   │   ├── Rendering.Environment/
+│   │   ├── Rendering.PostProcess/
+│   │   ├── Rendering.Particle/
+│   │   └── Rendering.Debug/
+│   │
+│   ├── Engine.Physics/
+│   │   ├── Physics.Shape/
+│   │   ├── Physics.Collision/
+│   │   ├── Physics.Solver/
+│   │   ├── Physics.Constraint/
+│   │   ├── Physics.Body/
+│   │   ├── Physics.Query/
+│   │   ├── Physics.Character/
+│   │   └── Physics.Debug/
+│   │
+│   ├── Engine.Sound/
+│   │   ├── Sound.Dsp/
+│   │   ├── Sound.Codec/
+│   │   ├── Sound.Stream/
+│   │   ├── Sound.Effect/
+│   │   ├── Sound.Mixer/
+│   │   ├── Sound.Spatial/
+│   │   ├── Sound.Source/
+│   │   ├── Sound.Listener/
+│   │   ├── Sound.Bank/
+│   │   └── Sound.Music/
+│   │
+│   ├── Engine.Animation/
+│   │   ├── Animation.Curve/
+│   │   ├── Animation.Clip/
+│   │   ├── Animation.Skeleton/
+│   │   ├── Animation.Pose/
+│   │   ├── Animation.Blend/
+│   │   ├── Animation.IK/
+│   │   ├── Animation.Retarget/
+│   │   ├── Animation.Morph/
+│   │   ├── Animation.Skinning/
+│   │   └── Animation.Graph/
+│   │
+│   ├── Engine.Networking/
+│   │   ├── Networking.Bitstream/
+│   │   ├── Networking.Transport/
+│   │   ├── Networking.Session/
+│   │   ├── Networking.Message/
+│   │   ├── Networking.Snapshot/
+│   │   ├── Networking.Replication/
+│   │   ├── Networking.Prediction/
+│   │   ├── Networking.Lobby/
+│   │   └── Networking.Debug/
+│   │
+│   ├── Engine.UI/
+│   │   ├── UI.Layout/
+│   │   ├── UI.Text/
+│   │   ├── UI.Style/
+│   │   ├── UI.Widget/
+│   │   ├── UI.Binding/
+│   │   ├── UI.Navigation/
+│   │   ├── UI.Animation/
+│   │   ├── UI.Draw/
+│   │   └── UI.Canvas/
+│   │
+│   ├── Engine.AI/
+│   │   ├── AI.Blackboard/
+│   │   ├── AI.Navigation/
+│   │   ├── AI.Steering/
+│   │   ├── AI.BehaviorTree/
+│   │   ├── AI.Utility/
+│   │   ├── AI.Planner/
+│   │   ├── AI.Perception/
+│   │   └── AI.Agent/
+│   │
+│   └── Engine.Scripting/               ← самый верхний модуль Engine
+│       ├── Scripting.Runtime/
+│       ├── Scripting.Lua/
+│       ├── Scripting.Wasm/
+│       ├── Scripting.Bridge/
+│       ├── Scripting.Binding/
+│       ├── Scripting.Component/
+│       ├── Scripting.HotReload/
+│       └── Scripting.Debugger/
+│
+├── Empire.Editor/
+│   ├── Editor.Framework/               (окно, docking, undo/redo, команды)
+│   ├── Editor.Viewport/
+│   ├── Editor.Panel/                   (Hierarchy, Inspector, ContentBrowser, Console)
+│   ├── Editor.Gizmo/
+│   ├── Editor.Tool/
+│   └── Editor.Plugin/
+│
+├── Empire.Tools/
+│   ├── Tools.AssetCompiler/
+│   ├── Tools.ShaderCompiler/
+│   ├── Tools.Packager/
+│   ├── Tools.Profiler/                 (просмотр профайлов)
+│   └── Tools.Cli/
+│
+├── Empire.Game/                        (точка входа: main, game-код, --headless для сервера)
+│
+├── Empire.Tests/
+│   ├── Tests.Unit/
+│   ├── Tests.Integration/
+│   ├── Tests.Benchmark/
+│   └── Tests.Mock/
+│
+├── Content/                            (движковые шейдеры, шрифты, иконки)
+├── Build/                              (правила xmake, тулчейны, проверка зависимостей)
+└── Docs/
+
+
+
