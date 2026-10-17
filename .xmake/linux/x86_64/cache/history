@@ -1,11 +1,5 @@
 {
     cmdlines = {
-        "xmake project -k compile_commands",
-        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
-        "xmake check -v",
-        "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
-        "xmake check -v",
-        "xmake check -v",
         "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
         "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
         "xmake check -v",
@@ -62,6 +56,12 @@
         "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/explorer.lua",
         "xmake l /home/devchik10/.vscode/extensions/tboox.xmake-vscode-2.6.0/assets/config.lua",
         "xmake check -v",
+        "xmake check -v",
+        "xmake check -v",
+        "xmake check -v",
+        "xmake check",
+        "xmake check",
+        "xmake check",
         "xmake check -v",
         "xmake check -v",
         "xmake check -v"

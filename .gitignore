@@ -2,3 +2,4 @@ Empire.Build/
 build/
 .cache/
 .xmake/
+.xmake/linux/x86_64/cache/history
