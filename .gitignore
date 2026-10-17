@@ -1,3 +1,4 @@
-.xmake/
 Empire.Build/
 build/
+.cache/
+.xmake/
